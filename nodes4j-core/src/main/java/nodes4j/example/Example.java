@@ -17,6 +17,7 @@ public class Example {
 				
 		final Process<Integer, Double> mainProcess = new Process<>();
 		
+		/*
 		mainProcess
 			.data(list)
 			.filter(new Predicate<Integer>() {
@@ -43,6 +44,16 @@ public class Example {
 					System.out.println(mainProcess.getFirstResult().toString());
 				}
 			})
+			.start();
+		*/
+		/* Java 8 */
+		mainProcess
+			.data(list)
+			.filter(v -> v>0)
+			.map(v -> v+100d)
+			.forEach(System.out::println)
+			.sortedDESC()
+			.onTermination(() -> System.out.println(mainProcess.getFirstResult().toString()))
 			.start();
 	}
 }
