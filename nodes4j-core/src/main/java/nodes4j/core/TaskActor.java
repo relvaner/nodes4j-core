@@ -10,7 +10,7 @@ import actor4j.core.ActorGroup;
 import actor4j.core.messages.ActorMessage;
 import nodes4j.function.BinaryOperator;
 
-import static actor4.core.utils.CommPattern.*;
+import static actor4j.core.utils.CommPattern.*;
 import static nodes4j.core.ActorMessageTag.*;
 
 public class TaskActor<T, R> extends Actor {
