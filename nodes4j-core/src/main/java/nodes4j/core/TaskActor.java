@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.commons.lang.mutable.MutableObject;
 
 import actor4j.core.Actor;
-import actor4j.core.ActorGroup;
 import actor4j.core.messages.ActorMessage;
+import actor4j.core.utils.ActorGroup;
 import nodes4j.function.BinaryOperator;
 
 import static actor4j.core.utils.CommPattern.*;

@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import actor4j.core.Actor;
-import actor4j.core.ActorFactory;
-import actor4j.core.ActorGroup;
 import actor4j.core.messages.ActorMessage;
+import actor4j.core.utils.ActorFactory;
+import actor4j.core.utils.ActorGroup;
 import nodes4j.core.exceptions.DataException;
 
 import static actor4j.core.utils.CommPattern.*;

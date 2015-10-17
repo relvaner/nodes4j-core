@@ -8,9 +8,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import actor4j.core.Actor;
-import actor4j.core.ActorFactory;
 import actor4j.core.ActorSystem;
 import actor4j.core.messages.ActorMessage;
+import actor4j.core.utils.ActorFactory;
 import nodes4j.core.Node;
 import nodes4j.core.NodeActor;
 import nodes4j.core.exceptions.DataException;
