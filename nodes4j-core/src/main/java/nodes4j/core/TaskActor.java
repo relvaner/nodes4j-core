@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.mutable.MutableObject;
 
-import actor4j.core.Actor;
+import actor4j.core.actors.Actor;
 import actor4j.core.messages.ActorMessage;
 import actor4j.core.utils.ActorGroup;
 import nodes4j.function.BinaryOperator;
@@ -45,11 +45,11 @@ public class TaskActor<T, R> extends Actor {
 
 	@SuppressWarnings("unchecked")
 	protected void treeReduction(ActorMessage<?> message) {
-		int grank = group.indexOf(getSelf());
+		int grank = group.indexOf(self());
 		if (grank%(1<<(level+1))>0) { 
 			int dest = grank-(1<<level);
 			//System.out.printf("[level: %d] rank %d has sended a message (%s) to rank %d%n", level, group.indexOf(getSelf()), result.getValue().toString(), dest);
-			send(new ActorMessage<>(result.getValue(), REDUCE, getSelf(), group.get(dest)));
+			send(new ActorMessage<>(result.getValue(), REDUCE, self(), group.get(dest)));
 			stop();
 		}
 		else if (message.tag==REDUCE.ordinal()){
@@ -68,7 +68,7 @@ public class TaskActor<T, R> extends Actor {
 			int source = grank+(1<<level);
 			if (source>group.size()-1)
 				if (grank==0) {
-					broadcast(new ActorMessage<>(result.getValue(), dest_tag, getSelf(), null), this, hubGroup);
+					broadcast(new ActorMessage<>(result.getValue(), dest_tag, self(), null), this, hubGroup);
 					stop();
 					return;
 				} else {

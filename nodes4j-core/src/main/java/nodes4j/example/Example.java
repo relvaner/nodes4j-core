@@ -52,7 +52,7 @@ public class Example {
 			.filter(v -> v>0)
 			.map(v -> v+100d)
 			.forEach(System.out::println)
-			.sortedDESC()
+			.sortedASC()
 			.onTermination(() -> System.out.println(mainProcess.getFirstResult().toString()))
 			.start();
 	}

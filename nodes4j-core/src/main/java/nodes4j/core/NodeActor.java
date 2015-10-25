@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import actor4j.core.Actor;
+import actor4j.core.actors.Actor;
 import actor4j.core.messages.ActorMessage;
 import actor4j.core.utils.ActorFactory;
 import actor4j.core.utils.ActorGroup;
@@ -73,7 +73,7 @@ public class NodeActor<T, R> extends Actor {
 	public void receive(ActorMessage<?> message) {
 		if (message.tag==DATA.ordinal()) {
 			if (node.sucs==null || node.sucs.size()==0) {
-				hubGroup.add(getSelf());
+				hubGroup.add(self());
 				dest_tag = RESULT;
 			}
 			else
@@ -95,18 +95,18 @@ public class NodeActor<T, R> extends Actor {
 				result.put(node.id, message.value);
 			
 			if (node.isRoot)
-				system.shutdown();
+				getSystem().shutdown();
 			else
-				send(new ActorMessage<>(null, SHUTDOWN, getSelf(), parent));
+				send(new ActorMessage<>(null, SHUTDOWN, self(), getParent()));
 		}
 		else if (message.tag==SHUTDOWN.ordinal()) {
 			waitForChildren.remove(message.source);
 			
 			if ( waitForChildren.size()==0) {
 				if (node.isRoot)
-					system.shutdown();
+					getSystem().shutdown();
 				else
-					send(new ActorMessage<>(null, SHUTDOWN, getSelf(), parent));
+					send(new ActorMessage<>(null, SHUTDOWN, self(), getParent()));
 			}
 		}
 	}
