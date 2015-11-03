@@ -10,8 +10,8 @@
   	
   	<dependencies>
   		<dependency>
-  			<groupId>actor4j-m-core</groupId>
-    		<artifactId>actor4j-m-core</artifactId>
+  			<groupId>actor4j-core</groupId>
+    		<artifactId>actor4j-core</artifactId>
     		<version>1.0.0</version>
   		</dependency>
   		<dependency>
