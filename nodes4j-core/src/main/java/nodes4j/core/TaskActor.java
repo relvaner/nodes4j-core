@@ -8,6 +8,7 @@ import org.apache.commons.lang.mutable.MutableObject;
 import actor4j.core.actors.Actor;
 import actor4j.core.messages.ActorMessage;
 import actor4j.core.utils.ActorGroup;
+import actor4j.core.utils.ActorGroupAsList;
 import nodes4j.function.BinaryOperator;
 
 import static actor4j.core.utils.CommPattern.*;
@@ -16,14 +17,14 @@ import static nodes4j.core.ActorMessageTag.*;
 public class TaskActor<T, R> extends Actor {
 	protected NodeOperations<T, R> operations;
 	protected BinaryOperator<List<R>> defaultAccumulator;
-	protected ActorGroup group;
+	protected ActorGroupAsList group;
 	protected ActorGroup hubGroup;
 	protected ActorMessageTag dest_tag;
 	
 	protected MutableObject result;
 	protected int level;
 	
-	public TaskActor(String name, NodeOperations<T, R> operations, ActorGroup group, ActorGroup hubGroup, ActorMessageTag dest_tag) {
+	public TaskActor(String name, NodeOperations<T, R> operations, ActorGroupAsList group, ActorGroup hubGroup, ActorMessageTag dest_tag) {
 		super(name);
 		
 		this.operations = operations;
