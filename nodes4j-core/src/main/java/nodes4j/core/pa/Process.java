@@ -129,7 +129,7 @@ public class Process<T, R> {
 		return sequence(Arrays.asList(processes));
 	}
 	
-	public Process<T, R> merge(List<Process<T, ?>> processes) {
+	public Process<T, R> parallel(List<Process<T, ?>> processes) {
 		if (processes!=null)
 			for (Process<T, ?> p : processes)
 				sequence(p);
@@ -138,8 +138,8 @@ public class Process<T, R> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Process<T, R> merge(Process<T, ?>... processes) {
-		return merge(Arrays.asList(processes));
+	public Process<T, R> parallel(Process<T, ?>... processes) {
+		return parallel(Arrays.asList(processes));
 	}
 	
 	public void start() {
