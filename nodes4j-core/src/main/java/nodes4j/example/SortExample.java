@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 //import java.util.Random;
 
+import nodes4j.core.pa.Process;
+import nodes4j.core.pa.ProcessManager;
 import nodes4j.core.pa.utils.SortProcess;
 import nodes4j.core.pa.utils.SortType;
 
@@ -24,25 +26,27 @@ public class SortExample {
 			list.add(r.nextInt(100000));
 		*/
 		
+		Process<Integer, Integer> exampleProcess = new Process<>();
+		exampleProcess
+			.data(list, 5);
 		
-		final SortProcess<Integer> sortProcess = new SortProcess<>(SortType.SORT_ASCENDING);
-		sortProcess
-			.data(list, 5)
-			.onTermination(new Runnable() {
-				@Override
-				public void run() {
-					System.out.println(sortProcess.getResult().toString());
-					/*
-					try {
-						BufferedWriter writer = new BufferedWriter( new FileWriter("result.txt"));
-					    writer.write(sortProcess.getResult().toString());
-					    writer.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					*/
+		exampleProcess.sequence(new SortProcess<>(SortType.SORT_ASCENDING));
+		
+		ProcessManager manager = new ProcessManager();
+		manager
+			.onTermination(() -> {
+				System.out.println(manager.getFirstResult().toString());
+				
+				/*
+				try {
+					BufferedWriter writer = new BufferedWriter(new FileWriter("result.txt"));
+				    writer.write(manager.getFirstResult().toString());
+				    writer.close();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
+				*/
 			})
-			.start();
+			.start(exampleProcess);
 	}
 }
