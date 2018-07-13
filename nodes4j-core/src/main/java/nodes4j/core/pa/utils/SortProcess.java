@@ -2,7 +2,6 @@ package nodes4j.core.pa.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -16,7 +15,7 @@ public class SortProcess<T extends Comparable<? super T>> extends Process<T, T> 
 		mapAsList(new Function<List<T>, List<T>>() {
 			@Override
 			public List<T> apply(List<T> list) {
-				List<T> result = new LinkedList<>(list);
+				List<T> result = new ArrayList<>(list);
 				
 				if (type == SortType.SORT_ASCENDING)
 					Collections.sort(result);
