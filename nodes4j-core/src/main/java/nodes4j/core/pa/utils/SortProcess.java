@@ -2,10 +2,11 @@ package nodes4j.core.pa.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 
-import nodes4j.function.BinaryOperator;
-import nodes4j.function.Function;
 import nodes4j.core.pa.Process;
 
 public class SortProcess<T extends Comparable<? super T>> extends Process<T, T> {
@@ -15,12 +16,14 @@ public class SortProcess<T extends Comparable<? super T>> extends Process<T, T> 
 		mapAsList(new Function<List<T>, List<T>>() {
 			@Override
 			public List<T> apply(List<T> list) {
-				if (type == SortType.SORT_ASCENDING)
-					Collections.sort(list);
-				else
-					Collections.sort(list, Collections.reverseOrder());
+				List<T> result = new LinkedList<>(list);
 				
-				return list;
+				if (type == SortType.SORT_ASCENDING)
+					Collections.sort(result);
+				else
+					Collections.sort(result, Collections.reverseOrder());
+				
+				return result;
 			}});
 						
 		reduce(new BinaryOperator<List<T>>() {

@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import actor4j.core.ActorSystem;
 import actor4j.core.actors.Actor;
+import actor4j.core.immutable.ImmutableList;
 import actor4j.core.messages.ActorMessage;
 import actor4j.core.utils.ActorFactory;
 import nodes4j.core.NodeActor;
@@ -38,7 +39,7 @@ public class ProcessManager {
 		});
 
 		system.send(new ActorMessage<>(null, DATA, root, root));
-		system.start(onTermination);
+		system.start(null, onTermination);
 	}
 	
 	public void stop() {
@@ -52,7 +53,7 @@ public class ProcessManager {
 	
 	public List<?> getFirstResult() {
 		if (mainProcess.result.values().iterator().hasNext())
-			return (List<?>)mainProcess.result.values().iterator().next();
+			return ((ImmutableList<?>)mainProcess.result.values().iterator().next()).get();
 		else
 			return null;
 	}

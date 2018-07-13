@@ -2,14 +2,15 @@ package nodes4j.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BinaryOperator;
 
-import org.apache.commons.lang.mutable.MutableObject;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 import actor4j.core.actors.Actor;
+import actor4j.core.immutable.ImmutableList;
 import actor4j.core.messages.ActorMessage;
 import actor4j.core.utils.ActorGroup;
-import actor4j.core.utils.ActorGroupAsList;
-import nodes4j.function.BinaryOperator;
+import actor4j.core.utils.ActorGroupList;
 
 import static actor4j.core.utils.CommPattern.*;
 import static nodes4j.core.ActorMessageTag.*;
@@ -17,14 +18,14 @@ import static nodes4j.core.ActorMessageTag.*;
 public class TaskActor<T, R> extends Actor {
 	protected NodeOperations<T, R> operations;
 	protected BinaryOperator<List<R>> defaultAccumulator;
-	protected ActorGroupAsList group;
+	protected ActorGroupList group;
 	protected ActorGroup hubGroup;
 	protected ActorMessageTag dest_tag;
 	
-	protected MutableObject result;
+	protected MutableObject<Object> result;
 	protected int level;
 	
-	public TaskActor(String name, NodeOperations<T, R> operations, ActorGroupAsList group, ActorGroup hubGroup, ActorMessageTag dest_tag) {
+	public TaskActor(String name, NodeOperations<T, R> operations, ActorGroupList group, ActorGroup hubGroup, ActorMessageTag dest_tag) {
 		super(name);
 		
 		this.operations = operations;
@@ -41,7 +42,7 @@ public class TaskActor<T, R> extends Actor {
 		this.hubGroup = hubGroup;
 		this.dest_tag = dest_tag;
 		
-		result = new MutableObject();
+		result = new MutableObject<>();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -50,11 +51,11 @@ public class TaskActor<T, R> extends Actor {
 		if (grank%(1<<(level+1))>0) { 
 			int dest = grank-(1<<level);
 			//System.out.printf("[level: %d] rank %d has sended a message (%s) to rank %d%n", level, group.indexOf(getSelf()), result.getValue().toString(), dest);
-			send(new ActorMessage<>(result.getValue(), REDUCE, self(), group.get(dest)));
+			send(new ActorMessage<>(new ImmutableList<R>((List<R>)result.getValue()), REDUCE, self(), group.get(dest)));
 			stop();
 		}
-		else if (message.tag==REDUCE.ordinal()){
-			List<R> buf = (List<R>)message.valueAsList();
+		else if (message.tag==REDUCE.ordinal() && message.value!=null && message.value instanceof ImmutableList){
+			List<R> buf = ((ImmutableList<R>)message.value).get();
 			//System.out.printf("[level: %d] rank %d has received a message (%s) from rank %d%n", level, group.indexOf(getSelf()), buf.toString(), group.indexOf(getSender()));
 			if (operations.accumulator!=null)
 				result.setValue(operations.accumulator.apply((List<R>)result.getValue(), buf));
@@ -69,7 +70,7 @@ public class TaskActor<T, R> extends Actor {
 			int source = grank+(1<<level);
 			if (source>group.size()-1)
 				if (grank==0) {
-					broadcast(new ActorMessage<>(result.getValue(), dest_tag, self(), null), this, hubGroup);
+					broadcast(new ActorMessage<>(new ImmutableList<R>((List<R>)result.getValue()), dest_tag, self(), null), this, hubGroup);
 					stop();
 					return;
 				} else {
@@ -82,12 +83,14 @@ public class TaskActor<T, R> extends Actor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void receive(ActorMessage<?> message) {
-		if (message.tag==TASK.ordinal()) {
+		if (message.tag==TASK.ordinal() && message.value!=null && message.value instanceof ImmutableList) {
+			ImmutableList<T> immutableList = (ImmutableList<T>)message.value;
+			
 			if (operations.mapAsList!=null)
-				result.setValue(operations.mapAsList.apply((List<T>)message.valueAsList()));
+				result.setValue(operations.mapAsList.apply(immutableList.get()));
 			else {
-				List<R> list = new ArrayList<>(message.valueAsList().size());
-				for (T t : (List<T>)message.valueAsList()) {
+				List<R> list = new ArrayList<>(immutableList.get().size());
+				for (T t : immutableList.get()) {
 					if (operations.filter!=null)
 						if (!operations.filter.test(t))
 							continue;

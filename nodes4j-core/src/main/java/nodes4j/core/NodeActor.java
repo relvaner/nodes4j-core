@@ -6,10 +6,12 @@ import java.util.Map;
 import java.util.UUID;
 
 import actor4j.core.actors.Actor;
+import actor4j.core.immutable.ImmutableList;
 import actor4j.core.messages.ActorMessage;
 import actor4j.core.utils.ActorFactory;
 import actor4j.core.utils.ActorGroup;
-import actor4j.core.utils.ActorGroupAsList;
+import actor4j.core.utils.ActorGroupList;
+import actor4j.core.utils.ActorGroupSet;
 import nodes4j.core.exceptions.DataException;
 
 import static actor4j.core.utils.CommPattern.*;
@@ -32,7 +34,7 @@ public class NodeActor<T, R> extends Actor {
 		
 		waitForChildren = new ArrayList<>(node.sucs.size());
 		
-		hubGroup = new ActorGroup();
+		hubGroup = new ActorGroupSet();
 	}
 	
 	@Override
@@ -80,16 +82,16 @@ public class NodeActor<T, R> extends Actor {
 			else
 				dest_tag = DATA;
 			
-			if (message.value!=null)
-				node.data = (List<T>)message.valueAsList();
-			ActorGroupAsList group = new ActorGroupAsList();
+			if (message.value!=null && message.value instanceof ImmutableList)
+				node.data = ((ImmutableList<T>)message.value).get();
+			ActorGroupList group = new ActorGroupList();
 			checkData(node.data);
 			node.nTasks = adjustSize(node.nTasks, node.data.size(), node.min_range);
 			for (int i=0; i<node.nTasks; i++) {
-				UUID task = addChild(TaskActor.class, "task-"+UUID.randomUUID().toString(), node.operations, group, hubGroup, dest_tag);
+				UUID task = addChild(() -> new TaskActor<>("task-"+UUID.randomUUID().toString(), node.operations, group, hubGroup, dest_tag));
 				group.add(task);
 			}
-			scatter(node.data, TASK.ordinal(), this, new ActorGroup(group));
+			scatter(node.data, TASK.ordinal(), this, new ActorGroupSet(group));
 		}
 		else if (message.tag==RESULT.ordinal()) {
 			if (result!=null)

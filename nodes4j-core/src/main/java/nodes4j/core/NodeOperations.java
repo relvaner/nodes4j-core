@@ -1,11 +1,10 @@
 package nodes4j.core;
 
 import java.util.List;
-
-import nodes4j.function.BinaryOperator;
-import nodes4j.function.Consumer;
-import nodes4j.function.Function;
-import nodes4j.function.Predicate;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class NodeOperations<T, R> {
 	/* lazy  */

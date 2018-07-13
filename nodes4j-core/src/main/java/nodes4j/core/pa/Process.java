@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import nodes4j.core.Node;
-import nodes4j.function.BinaryOperator;
-import nodes4j.function.Consumer;
-import nodes4j.function.Function;
-import nodes4j.function.Predicate;
 
 public class Process<T, R> {
 	protected Node<T, R> node;
