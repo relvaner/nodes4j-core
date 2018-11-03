@@ -2,11 +2,13 @@ package nodes4j.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.BinaryOperator;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import actor4j.core.actors.Actor;
+import actor4j.core.actors.ActorDistributedGroupMember;
 import actor4j.core.immutable.ImmutableList;
 import actor4j.core.messages.ActorMessage;
 import actor4j.core.utils.ActorGroup;
@@ -15,7 +17,7 @@ import actor4j.core.utils.ActorGroupList;
 import static actor4j.core.utils.CommPattern.*;
 import static nodes4j.core.ActorMessageTag.*;
 
-public class TaskActor<T, R> extends Actor {
+public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMember {
 	protected NodeOperations<T, R> operations;
 	protected BinaryOperator<List<R>> defaultAccumulator;
 	protected ActorGroupList group;
@@ -109,5 +111,10 @@ public class TaskActor<T, R> extends Actor {
 		
 		if (message.tag==TASK.ordinal() || message.tag==REDUCE.ordinal())
 			treeReduction(message);
+	}
+
+	@Override
+	public UUID getGroupId() {
+		return group.getId();
 	}
 }
