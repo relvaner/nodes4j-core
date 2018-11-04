@@ -121,7 +121,7 @@ public class ProcessFeature {
 		List<Integer> postConditionList = new ArrayList<>();
 		postConditionList.addAll(Arrays.asList(postcondition_numbers));
 		
-		Process<Integer, Integer> process = new Process<>();
+		Process<Integer, Integer> process = new Process<>("process_main");
 		process
 			.data(preConditionList, 5);
 		
@@ -130,6 +130,7 @@ public class ProcessFeature {
 		ProcessManager manager = new ProcessManager();
 		manager
 			.onTermination(() -> { 
+				//logger().debug(manager.getData("process_main")); 
 				assertEquals(postConditionList, manager.getResult("process_sort_asc")); 
 				logger().debug(manager.getResult("process_sort_asc")); 
 				testDone.countDown();})

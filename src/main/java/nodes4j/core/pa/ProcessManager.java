@@ -53,7 +53,13 @@ public class ProcessManager {
 	*/
 	
 	public List<?> getResult(UUID id) {
-		return ((ImmutableList<?>)mainProcess.result.get(id)).get();
+		List<?> result = null;
+		
+		Object obj = mainProcess.result.get(id);
+		if (obj!=null)
+			result = ((ImmutableList<?>)mainProcess.result.get(id)).get(); 
+		
+		return result;
 	}
 	
 	public List<?> getFirstResult() {
@@ -64,6 +70,12 @@ public class ProcessManager {
 	}
 	
 	public List<?> getResult(String alias) {
-		return getResult(mainProcess.aliases.get(alias));
+		List<?> result = null;
+		
+		UUID id = mainProcess.aliases.get(alias);
+		if (id!=null)
+			result = getResult(id);
+		
+		return result;
 	}
 }
