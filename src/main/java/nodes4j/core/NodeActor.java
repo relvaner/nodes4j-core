@@ -22,6 +22,9 @@ public class NodeActor<T, R> extends Actor {
 	protected ActorGroup hubGroup;
 	protected ActorMessageTag dest_tag;
 	
+	protected boolean debugDataEnabled;
+	// ThreadSafe
+	protected Map<UUID, List<?>> debugData;
 	// ThreadSafe
 	protected Map<UUID, Object> result;
 	// ThreadSafe
@@ -29,10 +32,13 @@ public class NodeActor<T, R> extends Actor {
 	
 	protected List<UUID> waitForChildren;
 	
-	public NodeActor(String name, Node<T, R> node, Map<UUID, Object> result, Map<String, UUID> aliases) {
+	public NodeActor(String name, Node<T, R> node, Map<UUID, Object> result, Map<String, UUID> aliases, boolean debugDataEnabled, Map<UUID, List<?>> debugData) {
 		super(name);
 		
 		this.node = node;
+		
+		this.debugDataEnabled = debugDataEnabled;
+		this.debugData = debugData;
 		this.result = result;
 		this.aliases = aliases;
 		
@@ -41,14 +47,20 @@ public class NodeActor<T, R> extends Actor {
 		hubGroup = new ActorGroupSet();
 	}
 	
+	public NodeActor(String name, Node<T, R> node, Map<UUID, Object> result, Map<String, UUID> aliases) {
+		this(name, node, result, aliases, false, null);
+	}
+	
 	@Override
 	public void preStart() {
 		/*
 		if (node.alias!=null)
 			setAlias(node.alias);
 		*/
-		if (node.alias!=null)
+		if (aliases!=null && node.alias!=null)
 			aliases.put(node.alias, node.id);
+		if (debugDataEnabled && debugData!=null && node.data!=null)
+			debugData.put(node.id, node.data);
 		
 		if (node.sucs!=null)
 			for (Node<?, ?> suc : node.sucs) {
@@ -57,7 +69,7 @@ public class NodeActor<T, R> extends Actor {
 				UUID ref = addChild(new ActorFactory() {
 					@Override
 					public Actor create() {
-						return new NodeActor<>("node-"+UUID.randomUUID().toString(), suc, result, aliases);
+						return new NodeActor<>("node-"+UUID.randomUUID().toString(), suc, result, aliases, debugDataEnabled, debugData);
 					}
 				});
 				hubGroup.add(ref);
@@ -90,8 +102,11 @@ public class NodeActor<T, R> extends Actor {
 			else
 				dest_tag = DATA;
 			
-			if (message.value!=null && message.value instanceof ImmutableList)
+			if (message.value!=null && message.value instanceof ImmutableList) {
 				node.data = ((ImmutableList<T>)message.value).get();
+				if (debugDataEnabled && debugData!=null)
+					debugData.put(node.id, node.data);
+			}
 			ActorGroupList group = new ActorGroupList();
 			checkData(node.data);
 			node.nTasks = adjustSize(node.nTasks, node.data.size(), node.min_range);

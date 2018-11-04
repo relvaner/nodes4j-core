@@ -127,12 +127,13 @@ public class ProcessFeature {
 		
 		process.sequence(new SortProcess<>("process_sort_asc", SortType.SORT_ASCENDING));
 			
-		ProcessManager manager = new ProcessManager();
+		ProcessManager manager = new ProcessManager(true);
 		manager
 			.onTermination(() -> { 
-				//logger().debug(manager.getData("process_main")); 
+				logger().debug("Data (process_main): "+manager.getData("process_main"));
+				logger().debug("Data (process_sort_asc): "+manager.getData("process_sort_asc"));
 				assertEquals(postConditionList, manager.getResult("process_sort_asc")); 
-				logger().debug(manager.getResult("process_sort_asc")); 
+				logger().debug("Result (process_sort_asc): "+manager.getResult("process_sort_asc")); 
 				testDone.countDown();})
 			.start(process);
 		

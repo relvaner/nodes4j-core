@@ -19,6 +19,17 @@ public class ProcessManager {
 	
 	protected Process<?, ?> mainProcess;
 	
+	protected boolean debugDataEnabled;
+	
+	public ProcessManager() {
+		this(false);
+	}
+	
+	public ProcessManager(boolean debugDataEnabled) {
+		super();
+		this.debugDataEnabled = debugDataEnabled;
+	}
+	
 	public ProcessManager onTermination(Runnable onTermination) {
 		this.onTermination = onTermination;
 		
@@ -31,13 +42,14 @@ public class ProcessManager {
 		system = new ActorSystem("nodes4j");
 		mainProcess.node.nTasks = Runtime.getRuntime().availableProcessors()/*stand-alone*/;
 		mainProcess.node.isRoot = true;
+		mainProcess.data = new ConcurrentHashMap<>();
 		mainProcess.result = new ConcurrentHashMap<>();
 		mainProcess.aliases = new ConcurrentHashMap<>();
 		
 		UUID root = system.addActor(new ActorFactory() {
 			@Override
 			public Actor create() {
-				return new NodeActor<>("root", mainProcess.node, mainProcess.result, mainProcess.aliases);
+				return new NodeActor<>("root", mainProcess.node, mainProcess.result, mainProcess.aliases, debugDataEnabled, mainProcess.data);
 			}
 		});
 
@@ -51,6 +63,20 @@ public class ProcessManager {
 			system.shutdownWithActors(true);
 	}
 	*/
+	
+	public List<?> getData(UUID id) { 
+		return mainProcess.data.get(id);
+	}
+	
+	public List<?> getData(String alias) {
+		List<?> result = null;
+		
+		UUID id = mainProcess.aliases.get(alias);
+		if (id!=null)
+			result = getData(id);
+		
+		return result;
+	}
 	
 	public List<?> getResult(UUID id) {
 		List<?> result = null;

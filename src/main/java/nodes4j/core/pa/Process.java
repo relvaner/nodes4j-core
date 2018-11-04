@@ -15,6 +15,7 @@ import nodes4j.core.Node;
 public class Process<T, R> {
 	protected Node<T, R> node;
 	
+	protected Map<UUID, List<?>> data; // initial set over ProcessManager
 	protected Map<UUID, Object> result; // initial set over ProcessManager
 	protected Map<String, UUID> aliases; // initial set over ProcessManager
 	
@@ -116,6 +117,10 @@ public class Process<T, R> {
 	@SuppressWarnings("unchecked")
 	public Process<T, R> parallel(Process<T, ?>... processes) {
 		return parallel(Arrays.asList(processes));
+	}
+	
+	public List<?> getData() {
+		return node.data;
 	}
 	
 	public List<?> getResult() {
