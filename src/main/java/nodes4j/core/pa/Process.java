@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -16,17 +15,21 @@ import nodes4j.core.Node;
 public class Process<T, R> {
 	protected Node<T, R> node;
 	
-	protected Map<UUID, Object> result;
+	protected Map<UUID, Object> result; // initial set over ProcessManager
+	protected Map<String, UUID> aliases; // initial set over ProcessManager
 	
 	protected ProcessAction<T, R> processAction;
 	
 	public Process() {
+		this(null);
+	}
+	
+	public Process(String alias) {
 		super();
 		
-		node = new Node<>();
+		node = new Node<>(alias);
 		node.id = UUID.randomUUID();
 		node.sucs = new ArrayList<>();
-		result = new ConcurrentHashMap<>();
 		
 		processAction = new ProcessAction<>(this);
 	}

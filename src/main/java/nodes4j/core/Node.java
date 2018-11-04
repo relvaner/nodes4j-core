@@ -5,6 +5,7 @@ import java.util.UUID;
 
 public class Node<T, R> {
 	public UUID id;
+	public String alias;
 	public List<T> data;
 	public NodeOperations<T, R> operations;
 	public int nTasks;
@@ -12,9 +13,14 @@ public class Node<T, R> {
 	public List<Node<?, ?>> sucs; // List<Node<T, ?>>
 	public boolean isRoot;
 	
-	public Node() {
+	public Node(String alias) {
 		super();
 		
+		this.alias = alias;
 		operations = new NodeOperations<>();
+	}
+	
+	public Node() {
+		this(null);
 	}
 }

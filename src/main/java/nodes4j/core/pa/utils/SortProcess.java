@@ -10,7 +10,11 @@ import nodes4j.core.pa.Process;
 
 public class SortProcess<T extends Comparable<? super T>> extends Process<T, T> {
 	public SortProcess(final SortType type) {
-		super();
+		this(null, type);
+	}
+	
+	public SortProcess(String name, final SortType type) {
+		super(name);
 
 		mapAsList(new Function<List<T>, List<T>>() {
 			@Override

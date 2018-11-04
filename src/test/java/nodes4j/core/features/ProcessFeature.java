@@ -114,6 +114,33 @@ public class ProcessFeature {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test(timeout=5000)
+	public void test_sequence_asc_alias() {
+		final Integer[] postcondition_numbers = { -15, -10, 0, 1, 1, 1, 2, 2, 3, 8, 14, 31, 34, 45, 78, 99, 123, 9257 };
+		List<Integer> postConditionList = new ArrayList<>();
+		postConditionList.addAll(Arrays.asList(postcondition_numbers));
+		
+		Process<Integer, Integer> process = new Process<>();
+		process
+			.data(preConditionList, 5);
+		
+		process.sequence(new SortProcess<>("process_sort_asc", SortType.SORT_ASCENDING));
+			
+		ProcessManager manager = new ProcessManager();
+		manager
+			.onTermination(() -> { 
+				assertEquals(postConditionList, manager.getResult("process_sort_asc")); 
+				logger().debug(manager.getResult("process_sort_asc")); 
+				testDone.countDown();})
+			.start(process);
+		
+		try {
+			testDone.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }
 
 /*

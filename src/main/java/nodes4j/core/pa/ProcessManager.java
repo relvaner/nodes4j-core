@@ -4,6 +4,7 @@ import static nodes4j.core.ActorMessageTag.DATA;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import actor4j.core.ActorSystem;
 import actor4j.core.actors.Actor;
@@ -30,11 +31,13 @@ public class ProcessManager {
 		system = new ActorSystem("nodes4j");
 		mainProcess.node.nTasks = Runtime.getRuntime().availableProcessors()/*stand-alone*/;
 		mainProcess.node.isRoot = true;
+		mainProcess.result = new ConcurrentHashMap<>();
+		mainProcess.aliases = new ConcurrentHashMap<>();
 		
 		UUID root = system.addActor(new ActorFactory() {
 			@Override
 			public Actor create() {
-				return new NodeActor<>("root", mainProcess.node, mainProcess.result);
+				return new NodeActor<>("root", mainProcess.node, mainProcess.result, mainProcess.aliases);
 			}
 		});
 
@@ -42,13 +45,15 @@ public class ProcessManager {
 		system.start(null, onTermination);
 	}
 	
+	/*
 	public void stop() {
 		if (system!=null)
-			system.shutdown();
+			system.shutdownWithActors(true);
 	}
+	*/
 	
 	public List<?> getResult(UUID id) {
-		return (List<?>)mainProcess.result.get(id);
+		return ((ImmutableList<?>)mainProcess.result.get(id)).get();
 	}
 	
 	public List<?> getFirstResult() {
@@ -56,5 +61,9 @@ public class ProcessManager {
 			return ((ImmutableList<?>)mainProcess.result.values().iterator().next()).get();
 		else
 			return null;
+	}
+	
+	public List<?> getResult(String alias) {
+		return getResult(mainProcess.aliases.get(alias));
 	}
 }

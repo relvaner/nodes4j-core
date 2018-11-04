@@ -22,15 +22,19 @@ public class NodeActor<T, R> extends Actor {
 	protected ActorGroup hubGroup;
 	protected ActorMessageTag dest_tag;
 	
+	// ThreadSafe
 	protected Map<UUID, Object> result;
+	// ThreadSafe
+	protected Map<String, UUID> aliases;
 	
 	protected List<UUID> waitForChildren;
 	
-	public NodeActor(String name, Node<T, R> node, Map<UUID, Object> result) {
+	public NodeActor(String name, Node<T, R> node, Map<UUID, Object> result, Map<String, UUID> aliases) {
 		super(name);
 		
 		this.node = node;
 		this.result = result;
+		this.aliases = aliases;
 		
 		waitForChildren = new ArrayList<>(node.sucs.size());
 		
@@ -39,17 +43,21 @@ public class NodeActor<T, R> extends Actor {
 	
 	@Override
 	public void preStart() {
+		/*
+		if (node.alias!=null)
+			setAlias(node.alias);
+		*/
+		if (node.alias!=null)
+			aliases.put(node.alias, node.id);
+		
 		if (node.sucs!=null)
 			for (Node<?, ?> suc : node.sucs) {
 				suc.nTasks = node.nTasks; // ATTENTION
-				/*
-				UUID ref = addChild(NodeActor.class, "node"+UUID.randomUUID().toString(), suc, result);
-				*/
-				final Node<?, ?> f_suc = suc;
+				
 				UUID ref = addChild(new ActorFactory() {
 					@Override
 					public Actor create() {
-						return new NodeActor<>("node-"+UUID.randomUUID().toString(), f_suc, result);
+						return new NodeActor<>("node-"+UUID.randomUUID().toString(), suc, result, aliases);
 					}
 				});
 				hubGroup.add(ref);
