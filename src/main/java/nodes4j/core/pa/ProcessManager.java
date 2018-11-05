@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import actor4j.core.ActorSystem;
 import actor4j.core.actors.Actor;
-import actor4j.core.immutable.ImmutableList;
 import actor4j.core.messages.ActorMessage;
 import actor4j.core.utils.ActorFactory;
 import nodes4j.core.NodeActor;
@@ -79,18 +78,12 @@ public class ProcessManager {
 	}
 	
 	public List<?> getResult(UUID id) {
-		List<?> result = null;
-		
-		Object obj = mainProcess.result.get(id);
-		if (obj!=null)
-			result = ((ImmutableList<?>)mainProcess.result.get(id)).get(); 
-		
-		return result;
+		return mainProcess.result.get(id);
 	}
 	
 	public List<?> getFirstResult() {
 		if (mainProcess.result.values().iterator().hasNext())
-			return ((ImmutableList<?>)mainProcess.result.values().iterator().next()).get();
+			return mainProcess.result.values().iterator().next();
 		else
 			return null;
 	}

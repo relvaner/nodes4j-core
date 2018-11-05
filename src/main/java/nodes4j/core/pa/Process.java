@@ -16,7 +16,7 @@ public class Process<T, R> {
 	protected Node<T, R> node;
 	
 	protected Map<UUID, List<?>> data; // initial set over ProcessManager
-	protected Map<UUID, Object> result; // initial set over ProcessManager
+	protected Map<UUID, List<?>> result; // initial set over ProcessManager
 	protected Map<String, UUID> aliases; // initial set over ProcessManager
 	
 	protected ProcessAction<T, R> processAction;
@@ -82,7 +82,7 @@ public class Process<T, R> {
 		return processAction.sortedDESC();
 	}
 			
-	public <S> Process<T, S> sequence(Process<T, S> process) {
+	public <S> Process<R, S> sequence(Process<R, S> process) {
 		node.sucs.add(process.node);
 		process.result = result;
 		
@@ -106,16 +106,16 @@ public class Process<T, R> {
 		return sequence(Arrays.asList(processes));
 	}
 	
-	public Process<T, R> parallel(List<Process<T, ?>> processes) {
+	public List<Process<R, ?>> parallel(List<Process<R, ?>> processes) {
 		if (processes!=null)
-			for (Process<T, ?> p : processes)
+			for (Process<R, ?> p : processes)
 				sequence(p);
 		
-		return this;
+		return processes;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Process<T, R> parallel(Process<T, ?>... processes) {
+	public List<Process<R, ?>> parallel(Process<R, ?>... processes) {
 		return parallel(Arrays.asList(processes));
 	}
 	
@@ -124,6 +124,6 @@ public class Process<T, R> {
 	}
 	
 	public List<?> getResult() {
-		return (List<?>)result.get(node.id);
+		return result.get(node.id);
 	}
 }

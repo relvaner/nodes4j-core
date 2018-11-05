@@ -143,6 +143,53 @@ public class ProcessFeature {
 			e.printStackTrace();
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Test(timeout=5000)
+	public void test_sequence_parallel() {
+		final Integer[] postcondition_numbers1 = { -15, -10, 0, 1, 1, 1, 2, 2, 3, 8, 14, 31, 34, 45, 78, 99, 123, 9257 };
+		final Integer[] postcondition_numbers2 = { 9257, 123, 99, 78, 45, 34, 31, 14, 8, 3, 2, 2, 1, 1, 1, 0, -10, -15 };
+		final Integer[] postcondition_numbers3 = { 9257, 123, 99, 78, 45, 34, 31, 14, 8 };
+		List<Integer> postConditionList1 = new ArrayList<>();
+		postConditionList1.addAll(Arrays.asList(postcondition_numbers1));
+		List<Integer> postConditionList2 = new ArrayList<>();
+		postConditionList2.addAll(Arrays.asList(postcondition_numbers2));
+		List<Integer> postConditionList3 = new ArrayList<>();
+		postConditionList3.addAll(Arrays.asList(postcondition_numbers3));
+		
+		Process<Integer, Integer> process = new Process<>("process_main");
+		process
+			.data(preConditionList, 5);
+		
+		Process<Integer, Integer> process_sort1 = new SortProcess<Integer>("process_sort_asc1", SortType.SORT_ASCENDING);
+		Process<Integer, Integer> process_sort2 = new SortProcess<Integer>("process_sort_asc2", SortType.SORT_DESCENDING);
+		
+		process.parallel(process_sort1, process_sort2);
+		
+		Process<Integer, Integer> process_filter = new Process<>("process_filter");
+		process_filter.filter((v) -> v>5);
+		process_sort2.sequence(process_filter);
+			
+		ProcessManager manager = new ProcessManager(true);
+		manager
+			.onTermination(() -> { 
+				//logger().debug("Data (process_main): "+manager.getData("process_main"));
+				//logger().debug("Data (process_sort_asc): "+manager.getData("process_sort_asc"));
+				assertEquals(postConditionList1, manager.getResult("process_sort_asc1")); 
+				assertEquals(postConditionList2, manager.getData("process_filter")); 
+				assertTrue(postConditionList3.containsAll(manager.getResult("process_filter")));
+				logger().debug("Result (process_sort_asc1): "+manager.getResult("process_sort_asc1")); 
+				logger().debug("Result (process_sort_asc2): "+manager.getData("process_filter")); 
+				logger().debug("Result (process_filter): "+manager.getResult("process_filter")); 
+				testDone.countDown();})
+			.start(process);
+		
+		try {
+			testDone.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }
 
 /*

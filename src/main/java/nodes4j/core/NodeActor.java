@@ -26,13 +26,13 @@ public class NodeActor<T, R> extends Actor {
 	// ThreadSafe
 	protected Map<UUID, List<?>> debugData;
 	// ThreadSafe
-	protected Map<UUID, Object> result;
+	protected Map<UUID, List<?>> result;
 	// ThreadSafe
 	protected Map<String, UUID> aliases;
 	
 	protected List<UUID> waitForChildren;
 	
-	public NodeActor(String name, Node<T, R> node, Map<UUID, Object> result, Map<String, UUID> aliases, boolean debugDataEnabled, Map<UUID, List<?>> debugData) {
+	public NodeActor(String name, Node<T, R> node, Map<UUID, List<?>> result, Map<String, UUID> aliases, boolean debugDataEnabled, Map<UUID, List<?>> debugData) {
 		super(name);
 		
 		this.node = node;
@@ -47,7 +47,7 @@ public class NodeActor<T, R> extends Actor {
 		hubGroup = new ActorGroupSet();
 	}
 	
-	public NodeActor(String name, Node<T, R> node, Map<UUID, Object> result, Map<String, UUID> aliases) {
+	public NodeActor(String name, Node<T, R> node, Map<UUID, List<?>> result, Map<String, UUID> aliases) {
 		this(name, node, result, aliases, false, null);
 	}
 	
@@ -118,7 +118,7 @@ public class NodeActor<T, R> extends Actor {
 		}
 		else if (message.tag==RESULT.ordinal()) {
 			if (result!=null)
-				result.put(node.id, message.value);
+				result.put(node.id, ((ImmutableList<R>)message.value).get());
 			
 			if (node.isRoot)
 				getSystem().shutdown();
