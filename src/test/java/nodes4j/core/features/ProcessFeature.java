@@ -190,6 +190,60 @@ public class ProcessFeature {
 			e.printStackTrace();
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Test(timeout=5000)
+	public void test_merge() {
+		final Integer[] postcondition_numbers1 = { 14, 31, 34, 45, 78, 99, 123, 9257 };
+		final Integer[] postcondition_numbers2 = { -15, -10, 0, 1, 1, 1, 2, 2, 3, 8 };
+		final Integer[] postcondition_numbers3 = { 2, 2, 2, 3, 3, 4, 9, 15, 32, 35, 46, 80, 101 };
+		List<Integer> postConditionList1 = new ArrayList<>();
+		postConditionList1.addAll(Arrays.asList(postcondition_numbers1));
+		List<Integer> postConditionList2 = new ArrayList<>();
+		postConditionList2.addAll(Arrays.asList(postcondition_numbers2));
+		List<Integer> postConditionList3 = new ArrayList<>();
+		postConditionList3.addAll(Arrays.asList(postcondition_numbers3));
+		
+		Process<Integer, Integer> process_main = new Process<>("process_main");
+		process_main
+			.data(preConditionList);
+		
+		Process<Integer, Integer> process_a = new Process<>("process_a");
+		process_a
+			.filter((v) -> v>50 && v<100)
+			.map((v) -> v+2);
+		Process<Integer, Integer> process_b = new Process<>("process_b");
+		process_b
+			.filter((v) -> v>0 && v<=50)
+			.map((v) -> v+1);
+		Process<Integer, Integer> process_sort_asc = new SortProcess<Integer>("process_sort_asc", SortType.SORT_ASCENDING);
+		
+		process_main.parallel(process_a, process_b);
+		process_sort_asc.merge(process_a, process_b);
+		
+		ProcessManager manager = new ProcessManager(true);
+		manager
+			.onTermination(() -> { 
+				logger().debug("Data (process_a): "+manager.getData("process_a")); 
+				logger().debug("Data (process_b): "+manager.getData("process_b")); 
+				logger().debug("Data (process_sort_asc): "+manager.getData("process_sort_asc")); 
+				logger().debug("Result (process_sort_asc): "+manager.getResult("process_sort_asc")); 
+				assertTrue(preConditionList.containsAll(manager.getData("process_a")));
+				assertTrue(preConditionList.containsAll(manager.getData("process_b")));
+				//logger().debug("Result (process_a): "+manager.getResult("process_a")); 
+				//logger().debug("Result (process_b): "+manager.getResult("process_b")); 
+				//assertTrue(postConditionList1.containsAll(manager.getResult("process_a")));
+				//assertTrue(postConditionList2.containsAll(manager.getResult("process_b")));
+				assertEquals(postConditionList3, manager.getResult("process_sort_asc"));
+				testDone.countDown();})
+			.start(process_main);
+		
+		try {
+			testDone.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }
 
 /*

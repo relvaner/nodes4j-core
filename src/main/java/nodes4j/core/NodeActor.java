@@ -1,8 +1,10 @@
 package nodes4j.core;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import actor4j.core.actors.Actor;
@@ -30,7 +32,10 @@ public class NodeActor<T, R> extends Actor {
 	// ThreadSafe
 	protected Map<String, UUID> aliases;
 	
-	protected List<UUID> waitForChildren;
+	protected Set<UUID> waitForChildren;
+	protected int waitForParents;
+	
+	protected final Object lock;
 	
 	public NodeActor(String name, Node<T, R> node, Map<UUID, List<?>> result, Map<String, UUID> aliases, boolean debugDataEnabled, Map<UUID, List<?>> debugData) {
 		super(name);
@@ -42,9 +47,12 @@ public class NodeActor<T, R> extends Actor {
 		this.result = result;
 		this.aliases = aliases;
 		
-		waitForChildren = new ArrayList<>(node.sucs.size());
+		waitForChildren = new HashSet<>(node.sucs.size());
+		waitForParents = node.pres.size();
 		
 		hubGroup = new ActorGroupSet();
+		
+		lock = new Object();
 	}
 	
 	public NodeActor(String name, Node<T, R> node, Map<UUID, List<?>> result, Map<String, UUID> aliases) {
@@ -53,25 +61,36 @@ public class NodeActor<T, R> extends Actor {
 	
 	@Override
 	public void preStart() {
-		/*
-		if (node.alias!=null)
-			setAlias(node.alias);
-		*/
+		setAlias("node-"+node.id.toString());
+		
 		if (aliases!=null && node.alias!=null)
 			aliases.put(node.alias, node.id);
 		if (debugDataEnabled && debugData!=null && node.data!=null)
 			debugData.put(node.id, node.data);
 		
+		if (node.data==null)
+			node.data = new LinkedList<>();
+
 		if (node.sucs!=null)
 			for (Node<?, ?> suc : node.sucs) {
-				suc.nTasks = node.nTasks; // ATTENTION
 				
-				UUID ref = addChild(new ActorFactory() {
-					@Override
-					public Actor create() {
-						return new NodeActor<>("node-"+UUID.randomUUID().toString(), suc, result, aliases, debugDataEnabled, debugData);
+				// uses Double-Check-Idiom a la Bloch
+				UUID ref = getSystem().underlyingImpl().getActorFromAlias("node-"+suc.id.toString());
+				if (ref==null) {
+					synchronized(lock) {
+						ref = getSystem().underlyingImpl().getActorFromAlias("node-"+suc.id.toString());
+						if (ref==null) {
+							suc.nTasks = node.nTasks; // ATTENTION
+							ref = addChild(new ActorFactory() {
+								@Override
+								public Actor create() {
+									return new NodeActor<>("node-"+suc.id.toString(), suc, result, aliases, debugDataEnabled, debugData);
+								}
+							});
+						}
 					}
-				});
+				}
+				
 				hubGroup.add(ref);
 				waitForChildren.add(ref);
 			}
@@ -95,26 +114,31 @@ public class NodeActor<T, R> extends Actor {
 	@Override
 	public void receive(ActorMessage<?> message) {
 		if (message.tag==DATA.ordinal()) {
-			if (node.sucs==null || node.sucs.size()==0) {
-				hubGroup.add(self());
-				dest_tag = RESULT;
-			}
-			else
-				dest_tag = DATA;
+			waitForParents--;
 			
-			if (message.value!=null && message.value instanceof ImmutableList) {
-				node.data = ((ImmutableList<T>)message.value).get();
+			if (message.value!=null && message.value instanceof ImmutableList)
+				node.data.addAll(((ImmutableList<T>)message.value).get());
+			
+			if (waitForParents<=0) {
+				if (node.sucs==null || node.sucs.size()==0) {
+					hubGroup.add(self());
+					dest_tag = RESULT;
+				}
+				else
+					dest_tag = DATA;
+				
 				if (debugDataEnabled && debugData!=null)
 					debugData.put(node.id, node.data);
+				
+				ActorGroupList group = new ActorGroupList();
+				checkData(node.data);
+				node.nTasks = adjustSize(node.nTasks, node.data.size(), node.min_range);
+				for (int i=0; i<node.nTasks; i++) {
+					UUID task = addChild(() -> new TaskActor<>("task-"+UUID.randomUUID().toString(), node.operations, group, hubGroup, dest_tag));
+					group.add(task);
+				}
+				scatter(node.data, TASK.ordinal(), this, new ActorGroupSet(group));
 			}
-			ActorGroupList group = new ActorGroupList();
-			checkData(node.data);
-			node.nTasks = adjustSize(node.nTasks, node.data.size(), node.min_range);
-			for (int i=0; i<node.nTasks; i++) {
-				UUID task = addChild(() -> new TaskActor<>("task-"+UUID.randomUUID().toString(), node.operations, group, hubGroup, dest_tag));
-				group.add(task);
-			}
-			scatter(node.data, TASK.ordinal(), this, new ActorGroupSet(group));
 		}
 		else if (message.tag==RESULT.ordinal()) {
 			if (result!=null)
@@ -122,13 +146,18 @@ public class NodeActor<T, R> extends Actor {
 			
 			if (node.isRoot)
 				getSystem().shutdown();
-			else
-				send(new ActorMessage<>(null, SHUTDOWN, self(), getParent()));
+			else {
+				if (!node.pres.isEmpty()) // has more parents
+					for (Node<?, ?> pre : node.pres) 
+						sendViaAlias(new ActorMessage<>(null, SHUTDOWN, self(), null), "node-"+pre.id.toString());
+				else
+					send(new ActorMessage<>(null, SHUTDOWN, self(), getParent()));
+			}
 		}
 		else if (message.tag==SHUTDOWN.ordinal()) {
 			waitForChildren.remove(message.source);
 			
-			if ( waitForChildren.size()==0) {
+			if (waitForChildren.isEmpty()) {
 				if (node.isRoot)
 					getSystem().shutdown();
 				else

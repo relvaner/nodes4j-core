@@ -1,7 +1,7 @@
 package nodes4j.core.pa;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,7 +30,8 @@ public class Process<T, R> {
 		
 		node = new Node<>(alias);
 		node.id = UUID.randomUUID();
-		node.sucs = new ArrayList<>();
+		node.sucs = new HashSet<>();
+		node.pres = new HashSet<>();
 		
 		processAction = new ProcessAction<>(this);
 	}
@@ -94,6 +95,7 @@ public class Process<T, R> {
 		if (processes!=null) {
 			for (Process<?, ?> p : processes) {
 				parent.node.sucs.add(p.node);
+				p.node.pres.add(parent.node);
 				parent = p;
 				p.result = result;
 			}
@@ -117,6 +119,20 @@ public class Process<T, R> {
 	@SuppressWarnings("unchecked")
 	public List<Process<R, ?>> parallel(Process<R, ?>... processes) {
 		return parallel(Arrays.asList(processes));
+	}
+	
+	public Process<T, R> merge(List<Process<?, ?>> processes) {
+		if (processes!=null)
+			for (Process<?, ?> p : processes) {
+				node.pres.add(p.node);
+				p.node.sucs.add(node);
+			}
+		
+		return this;
+	}
+	
+	public Process<T, R> merge(Process<?, ?>... processes) {
+		return merge(Arrays.asList(processes));
 	}
 	
 	public List<?> getData() {
