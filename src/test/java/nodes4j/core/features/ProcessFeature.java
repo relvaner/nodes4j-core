@@ -225,6 +225,7 @@ public class ProcessFeature {
 		manager
 			.onTermination(() -> { 
 				logger().debug("Data (process_a): "+manager.getData("process_a")); 
+				logger().debug("Data (process_a): "+process_a.getData()); 
 				logger().debug("Data (process_b): "+manager.getData("process_b")); 
 				logger().debug("Data (process_sort_asc): "+manager.getData("process_sort_asc")); 
 				logger().debug("Result (process_sort_asc): "+manager.getResult("process_sort_asc")); 
@@ -234,9 +235,53 @@ public class ProcessFeature {
 				//logger().debug("Result (process_b): "+manager.getResult("process_b")); 
 				//assertTrue(postConditionList1.containsAll(manager.getResult("process_a")));
 				//assertTrue(postConditionList2.containsAll(manager.getResult("process_b")));
-				assertEquals(postConditionList3, manager.getResult("process_sort_asc"));
+				assertEquals(postConditionList3, manager.getResult("process_sort_asc")); 
+				//assertEquals(postConditionList3, process_sort_asc.getResult()); TODO: BUG
 				testDone.countDown();})
 			.start(process_main);
+		
+		try {
+			testDone.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test(timeout=5000)
+	public void test_multiple_root() {
+		final Integer[] precondition_numbers1 = { 3, 2, 1, 1, 0, 2, 45, 78, 99, 34 };
+		final Integer[] precondition_numbers2 = { 31, 8, 1, 123, 14, 9257, -10, -15 };
+		final Integer[] postcondition_numbers = { -15, -10, 0, 1, 1, 1, 2, 2, 3, 8, 14, 31, 34, 45, 78, 99, 123, 9257 };
+		List<Integer> preConditionList1 = new ArrayList<>();
+		preConditionList1.addAll(Arrays.asList(precondition_numbers1));
+		List<Integer> preConditionList2 = new ArrayList<>();
+		preConditionList2.addAll(Arrays.asList(precondition_numbers2));
+		List<Integer> postConditionList = new ArrayList<>();
+		postConditionList.addAll(Arrays.asList(postcondition_numbers));
+		
+		Process<Integer, Integer> process_a = new Process<>("process_a");
+		process_a
+			.data(preConditionList1);
+		Process<Integer, Integer> process_b = new Process<>("process_b");
+		process_b
+			.data(preConditionList2);
+		
+		Process<Integer, Integer> process_sort_asc = new SortProcess<Integer>("process_sort_asc", SortType.SORT_ASCENDING);
+		process_sort_asc.merge(process_a, process_b);
+		
+		ProcessManager manager = new ProcessManager(true);
+		manager
+			.onTermination(() -> { 
+				logger().debug("Data (process_a): "+manager.getData("process_a")); 
+				logger().debug("Data (process_a): "+process_a.getData()); 
+				logger().debug("Data (process_b): "+manager.getData("process_b")); 
+				logger().debug("Data (process_sort_asc): "+manager.getData("process_sort_asc")); 
+				logger().debug("Result (process_sort_asc): "+manager.getResult("process_sort_asc")); 
+				assertTrue(preConditionList1.containsAll(manager.getData("process_a")));
+				assertTrue(preConditionList2.containsAll(manager.getData("process_b")));
+				assertEquals(postConditionList, manager.getResult("process_sort_asc")); 
+				testDone.countDown();})
+			.start(process_a, process_b);
 		
 		try {
 			testDone.await();

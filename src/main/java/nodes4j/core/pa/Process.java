@@ -85,6 +85,7 @@ public class Process<T, R> {
 			
 	public <S> Process<R, S> sequence(Process<R, S> process) {
 		node.sucs.add(process.node);
+		process.data = data;
 		process.result = result;
 		
 		return process;
@@ -97,6 +98,7 @@ public class Process<T, R> {
 				parent.node.sucs.add(p.node);
 				p.node.pres.add(parent.node);
 				parent = p;
+				p.data = data;
 				p.result = result;
 			}
 		}
@@ -122,11 +124,16 @@ public class Process<T, R> {
 	}
 	
 	public Process<T, R> merge(List<Process<?, ?>> processes) {
-		if (processes!=null)
+		if (processes!=null) {
+			if (processes.size()>0) {
+				data = processes.get(0).data;
+				result = processes.get(0).result;
+			}
 			for (Process<?, ?> p : processes) {
 				node.pres.add(p.node);
 				p.node.sucs.add(node);
 			}
+		}
 		
 		return this;
 	}
@@ -140,6 +147,7 @@ public class Process<T, R> {
 	}
 	
 	public List<?> getResult() {
+		System.out.println(result); // TODO: BUG
 		return result.get(node.id);
 	}
 }
