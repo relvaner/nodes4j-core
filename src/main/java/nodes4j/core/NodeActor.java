@@ -35,7 +35,7 @@ public class NodeActor<T, R> extends Actor {
 	protected Set<UUID> waitForChildren;
 	protected int waitForParents;
 	
-	protected final Object lock;
+	protected static final Object lock = new Object();
 	
 	public NodeActor(String name, Node<T, R> node, Map<UUID, List<?>> result, Map<String, UUID> aliases, boolean debugDataEnabled, Map<UUID, List<?>> debugData) {
 		super(name);
@@ -51,8 +51,6 @@ public class NodeActor<T, R> extends Actor {
 		waitForParents = node.pres.size();
 		
 		hubGroup = new ActorGroupSet();
-		
-		lock = new Object();
 	}
 	
 	public NodeActor(String name, Node<T, R> node, Map<UUID, List<?>> result, Map<String, UUID> aliases) {
@@ -74,21 +72,33 @@ public class NodeActor<T, R> extends Actor {
 		if (node.sucs!=null)
 			for (Node<?, ?> suc : node.sucs) {
 				
-				// uses Double-Check-Idiom a la Bloch
-				UUID ref = getSystem().underlyingImpl().getActorFromAlias("node-"+suc.id.toString());
-				if (ref==null) {
-					synchronized(lock) {
-						ref = getSystem().underlyingImpl().getActorFromAlias("node-"+suc.id.toString());
-						if (ref==null) {
-							suc.nTasks = node.nTasks; // ATTENTION
-							ref = addChild(new ActorFactory() {
-								@Override
-								public Actor create() {
-									return new NodeActor<>("node-"+suc.id.toString(), suc, result, aliases, debugDataEnabled, debugData);
-								}
-							});
+				UUID ref = null;
+				if (suc.pres.size()>1) {
+					// uses Double-Check-Idiom a la Bloch
+					ref = getSystem().underlyingImpl().getActorFromAlias("node-"+suc.id.toString());
+					if (ref==null) {
+						synchronized(lock) {
+							ref = getSystem().underlyingImpl().getActorFromAlias("node-"+suc.id.toString());
+							if (ref==null) {
+								suc.nTasks = node.nTasks; // ATTENTION
+								ref = addChild(new ActorFactory() {
+									@Override
+									public Actor create() {
+										return new NodeActor<>("node-"+suc.id.toString(), suc, result, aliases, debugDataEnabled, debugData);
+									}
+								});
+							}
 						}
 					}
+				}
+				else {
+					suc.nTasks = node.nTasks; // ATTENTION
+					ref = addChild(new ActorFactory() {
+						@Override
+						public Actor create() {
+							return new NodeActor<>("node-"+suc.id.toString(), suc, result, aliases, debugDataEnabled, debugData);
+						}
+					});
 				}
 				
 				hubGroup.add(ref);
