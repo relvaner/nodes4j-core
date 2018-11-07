@@ -58,7 +58,7 @@ public class ProcessFeature {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test(timeout=5000)
 	public void test_asc() {
 		final Double[] postcondition_numbers = { 101.0, 101.0, 101.0, 102.0, 102.0, 103.0, 108.0, 114.0, 131.0, 134.0, 145.0, 178.0, 199.0, 223.0, 9357.0 };
@@ -70,7 +70,7 @@ public class ProcessFeature {
 			.data(preConditionList)
 			.filter(v -> v>0)
 			.map(v -> v+100d)
-			.forEach(System.out::println)
+			//.forEach(System.out::println)
 			.sortedASC();
 			
 		ProcessManager manager = new ProcessManager();
@@ -87,7 +87,7 @@ public class ProcessFeature {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test(timeout=5000)
 	public void test_sequence_asc() {
 		final Integer[] postcondition_numbers = { -15, -10, 0, 1, 1, 1, 2, 2, 3, 8, 14, 31, 34, 45, 78, 99, 123, 9257 };

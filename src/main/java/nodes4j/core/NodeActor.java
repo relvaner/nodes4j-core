@@ -22,7 +22,7 @@ import static nodes4j.core.ActorMessageTag.*;
 public class NodeActor<T, R> extends Actor {
 	protected Node<T, R> node;
 	protected ActorGroup hubGroup;
-	protected ActorMessageTag dest_tag;
+	protected int dest_tag;
 	
 	protected boolean debugDataEnabled;
 	// ThreadSafe
@@ -48,7 +48,7 @@ public class NodeActor<T, R> extends Actor {
 		this.aliases = aliases;
 		
 		waitForChildren = new HashSet<>(node.sucs.size());
-		waitForParents = node.pres.size();
+		waitForParents = node.pres!=null ? node.pres.size() : 0;
 		
 		hubGroup = new ActorGroupSet();
 	}
@@ -71,7 +71,6 @@ public class NodeActor<T, R> extends Actor {
 
 		if (node.sucs!=null)
 			for (Node<?, ?> suc : node.sucs) {
-				
 				UUID ref = null;
 				if (suc.pres.size()>1) {
 					// uses Double-Check-Idiom a la Bloch
@@ -123,7 +122,7 @@ public class NodeActor<T, R> extends Actor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void receive(ActorMessage<?> message) {
-		if (message.tag==DATA.ordinal()) {
+		if (message.tag==DATA) {
 			waitForParents--;
 			
 			if (message.value!=null && message.value instanceof ImmutableList)
@@ -147,10 +146,10 @@ public class NodeActor<T, R> extends Actor {
 					UUID task = addChild(() -> new TaskActor<>("task-"+UUID.randomUUID().toString(), node.operations, group, hubGroup, dest_tag));
 					group.add(task);
 				}
-				scatter(node.data, TASK.ordinal(), this, new ActorGroupSet(group));
+				scatter(node.data, TASK, this, new ActorGroupSet(group));
 			}
 		}
-		else if (message.tag==RESULT.ordinal()) {
+		else if (message.tag==RESULT) {
 			if (result!=null)
 				result.put(node.id, ((ImmutableList<R>)message.value).get());
 			
@@ -164,12 +163,12 @@ public class NodeActor<T, R> extends Actor {
 					send(new ActorMessage<>(null, SHUTDOWN, self(), getParent()));
 			}
 		}
-		else if (message.tag==SHUTDOWN.ordinal()) {
+		else if (message.tag==SHUTDOWN) {
 			waitForChildren.remove(message.source);
 			
 			if (waitForChildren.isEmpty()) {
 				if (node.isRoot)
-					getSystem().shutdown();
+					getSystem().shutdown(); // TODO: unsafe
 				else
 					send(new ActorMessage<>(null, SHUTDOWN, self(), getParent()));
 			}

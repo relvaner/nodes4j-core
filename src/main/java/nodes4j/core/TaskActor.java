@@ -2,6 +2,7 @@ package nodes4j.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.UUID;
 import java.util.function.BinaryOperator;
 
@@ -22,12 +23,12 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 	protected BinaryOperator<List<R>> defaultAccumulator;
 	protected ActorGroupList group;
 	protected ActorGroup hubGroup;
-	protected ActorMessageTag dest_tag;
+	protected int dest_tag;
 	
 	protected MutableObject<List<R>> result;
 	protected int level;
 	
-	public TaskActor(String name, NodeOperations<T, R> operations, ActorGroupList group, ActorGroup hubGroup, ActorMessageTag dest_tag) {
+	public TaskActor(String name, NodeOperations<T, R> operations, ActorGroupList group, ActorGroup hubGroup, int dest_tag) {
 		super(name);
 		
 		this.operations = operations;
@@ -45,7 +46,11 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 		this.dest_tag = dest_tag;
 		
 		result = new MutableObject<>();
-		result.setValue(new ArrayList<>()); // TODO: TEMPORARY
+		level = -1;
+		
+		stash = new PriorityQueue<ActorMessage<?>>(11, (m1, m2) -> { 
+			return Integer.valueOf(m1.protocol).compareTo(Integer.valueOf(m2.protocol)); 
+		} );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -53,20 +58,20 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 		int grank = group.indexOf(self());
 		if (grank%(1<<(level+1))>0) { 
 			int dest = grank-(1<<level);
-			//System.out.printf("[level: %d] rank %d has sended a message (%s) to rank %d%n", level, group.indexOf(getSelf()), result.getValue().toString(), dest);
-			send(new ActorMessage<>(new ImmutableList<R>(result.getValue()), REDUCE, self(), group.get(dest)));
+			//System.out.printf("[level: %d] rank %d has sended a message (%s) to rank %d%n", level, group.indexOf(self()), result.getValue().toString(), dest);
+			send(new ActorMessage<>(new ImmutableList<R>(result.getValue()), REDUCE, self(), group.get(dest), null, String.valueOf(level+1), null));
 			stop();
 		}
-		else if (message.tag==REDUCE.ordinal() && message.value!=null && message.value instanceof ImmutableList){
+		else if (message.tag==REDUCE && message.value!=null && message.value instanceof ImmutableList){
 			List<R> buf = ((ImmutableList<R>)message.value).get();
-			//System.out.printf("[level: %d] rank %d has received a message (%s) from rank %d%n", level, group.indexOf(getSelf()), buf.toString(), group.indexOf(getSender()));
+			//System.out.printf("[level: %d] rank %d has received a message (%s) from rank %d%n", level, group.indexOf(self()), buf.toString(), group.indexOf(message.source));
 			if (operations.accumulator!=null)
 				result.setValue(operations.accumulator.apply(result.getValue(), buf));
 			else
 				result.setValue(    defaultAccumulator.apply(result.getValue(), buf));
 			
 			level++;
-			message.tag = TASK.ordinal();
+			message.tag = TASK;
 			treeReduction(message);
 		}
 		else {
@@ -86,32 +91,53 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 	@SuppressWarnings("unchecked")
 	@Override
 	public void receive(ActorMessage<?> message) {
-		if (message.tag==TASK.ordinal() && message.value!=null && message.value instanceof ImmutableList) {
-			ImmutableList<T> immutableList = (ImmutableList<T>)message.value;
-			
-			if (operations.mapAsList!=null)
-				result.setValue(operations.mapAsList.apply(immutableList.get()));
-			else {
-				List<R> list = new ArrayList<>(immutableList.get().size());
-				for (T t : immutableList.get()) {
-					if (operations.filter!=null)
-						if (!operations.filter.test(t))
-							continue;
-					if (operations.mapper!=null)
-						list.add(operations.mapper.apply(t));
-					else
-						list.add((R)t);
-					if (operations.action!=null)
-						operations.action.accept(t);	
+		if (level<0) {
+			if (message.tag==TASK && message.value!=null && message.value instanceof ImmutableList) {
+				ImmutableList<T> immutableList = (ImmutableList<T>)message.value;
+				
+				if (operations.mapAsList!=null)
+					result.setValue(operations.mapAsList.apply(immutableList.get()));
+				else {
+					List<R> list = new ArrayList<>(immutableList.get().size());
+					for (T t : immutableList.get()) {
+						if (operations.filter!=null)
+							if (!operations.filter.test(t))
+								continue;
+						if (operations.mapper!=null)
+							list.add(operations.mapper.apply(t));
+						else
+							list.add((R)t);
+						if (operations.action!=null)
+							operations.action.accept(t);	
+					}
+					result.setValue(list);
 				}
-				result.setValue(list);
-			}
 
-			level = 0;
-		} 
-		
-		if (message.tag==TASK.ordinal() || message.tag==REDUCE.ordinal())
-			treeReduction(message);
+				level = 0;
+				
+				//System.out.printf("[level: %d] rank %d has got a message (%s) from manager %n", level, group.indexOf(self()), result.getValue().toString());
+				
+				treeReduction(message);
+				dissolveStash();
+			} 
+			else if (message.tag==REDUCE) {
+				stash.offer(message);
+			}
+		}
+		else if (message.tag==REDUCE) {
+			stash.offer(message);
+			dissolveStash();
+		}
+	}
+	
+	protected void dissolveStash() {
+		ActorMessage<?> message = null;
+		while ((message = stash.peek())!=null) {
+			if (Integer.valueOf(message.protocol)==level+1)
+				treeReduction(stash.poll());
+			else
+				break;
+		}
 	}
 
 	@Override
