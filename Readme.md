@@ -2,13 +2,13 @@
 
 At `nodes4j` nodes correspond to the processes, based on the process algebra [[1](#1)]. Several processes can be executed both sequentially and in parallel. Figure 1 shows the general workflow of a process. The incoming data of the process P1 is first split evenly and then mapped accordingly. Then the results are merged (Reduce) and sent to the processes P2, P3 and P4 (Hub). The `MapReduce` process is executed in parallel. The advantage of this approach lies in the loose coupling of the nodes or processes. They can be easily exchanged and replaced by others.
 
-<img src="doc/images/workflow.jpg" alt="Schematic representation of the workflow of nodes4j" width="600" height="341"/>
+<img src="doc/images/workflow.jpg" alt="Schematic representation of the workflow of nodes4j" width="300" height="170"/>
 
 Fig. 1: Schematic representation of the workflow of `nodes4j`
 
 If several processes are connected in sequence at `nodes4j`, this is a linear pipeline. When arranged in parallel around a concurrent pipeline (nonlinear pipeline [[2](#2)]). The process could be optimized by a vertical scaling, if appropriate hardware would be available. This means that the corresponding pipeline layout would need to be duplicated repeatedly in order to be able to scale it vertically. The processes can be arranged to a directional acyclic graph (Figure 2).
 
-<img src="doc/images/dag.jpg" alt="Directional acyclic graph (DAG)" width="549" height="493"/>
+<img src="doc/images/dag.jpg" alt="Directional acyclic graph (DAG)" width="274" height="246"/>
 
 Fig. 2: Directional acyclic graph (DAG)
 
@@ -29,7 +29,7 @@ If child nodes are present, they are initialized accordingly. This automatically
 - In the second step, the reduce operation is initiated, which may include a binary operation (e.g.). See the lower tree-like communication structure during the reduce operation of the participating `TaskActors`. The communication is asynchronous. The structure of the merge (see Figure 3) enables an optimal load distribution to the involved `TaskActors`.
 - The result may be passed on to successor nodes.
 
-<img src="doc/images/tree.jpg" alt="Representation of the tree-like communication structure during the reduction process." width="610" height="455"/>
+<img src="doc/images/tree.jpg" alt="Representation of the tree-like communication structure during the reduction process." width="305" height="278"/>
 
 Fig. 3: Representation of the tree-like communication structure during the reduction process.
 
