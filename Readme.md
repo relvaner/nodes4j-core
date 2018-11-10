@@ -31,7 +31,27 @@ If child nodes are present, they are initialized accordingly. This automatically
 
 <img src="doc/images/tree.jpg" alt="Representation of the tree-like communication structure during the reduction process." width="366" height="334"/>
 
-Fig. 3: Representation of the tree-like communication structure during the reduction process.
+Fig. 3: Representation of the tree-like communication structure during the reduction process
+
+## Internal DSL ##
+
+```java
+process1
+	// intra-process operation
+	.data(...)
+	.filter(...)
+	.map(...)
+	.forEach(...)
+    .reduce(…)
+    
+    // sorting as inter-process operation
+    .sortedASC() or .sortedDESC()
+
+	// inter-process operation
+	.sequence(process2, process3.parallel(process5, process6, process7));
+        
+process8.merge(process6, process7);
+```
 
 ## License ##
 This framework is released under an open source Apache 2.0 license.
