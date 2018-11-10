@@ -37,18 +37,18 @@ Fig. 3: Representation of the tree-like communication structure during the reduc
 
 ```java
 process1
-	// intra-process operation
-	.data(...)
-	.filter(...)
-	.map(...)
-	.forEach(...)
+    // intra-process operation
+    .data(...)
+    .filter(...)
+    .map(...)
+    .forEach(...)
     .reduce(…)
     
     // sorting as inter-process operation
     .sortedASC() or .sortedDESC()
 
-	// inter-process operation
-	.sequence(process2, process3.parallel(process5, process6, process7));
+    // inter-process operation
+    .sequence(process2, process3.parallel(process5, process6, process7));
         
 process8.merge(process6, process7);
 ```
