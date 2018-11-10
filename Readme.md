@@ -26,7 +26,7 @@ If child nodes are present, they are initialized accordingly. This automatically
 ### TaskActor ###
 
 - First, on the partial data, the registered node operations (filtering, mapping, etc.) are performed.
-- In the second step, the reduce operation is initiated, which may include a binary operation. See the lower tree-like communication structure during the reduce operation of the participating `TaskActors`. The communication is asynchronous. The structure of the merge process (see Figure 3) enables an optimal load distribution to the involved `TaskActors`.
+- In the second step, the reduce operation is initiated, which may include a binary operation (e.g., new result of p0 x p1 -> p0*). See the lower tree-like communication structure during the reduce operation of the participating `TaskActors`. The communication is asynchronous. The structure of the merge process (see Figure 3) enables an optimal load distribution to the involved `TaskActors`.
 - The result may be passed on to successor nodes.
 
 <img src="doc/images/tree.jpg" alt="Representation of the tree-like communication structure during the reduction process." width="366" height="334"/>
