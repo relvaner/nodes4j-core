@@ -33,6 +33,12 @@ If child nodes are present, they are initialized accordingly. This automatically
 
 Fig. 3: Representation of the tree-like communication structure during the reduction process.
 
+## License ##
+This framework is released under an open source Apache 2.0 license.
+
+## Announcement ##
+This software framework is currently under an prototype state.
+
 ## References ##
 [1]<a name="1"/> Baeten, J.C.M., Basten, T. & Reniers, M.A (2009). Process Algebra. Equational Theories of Communicating Processes. Volume 50. Cambridge University Press.  
 [2]<a name="2"/> Mattson, Timothy G., Snaders, Beverly A. & Massingill, Berna L. (2004). A Pattern Language for Parallel Programming. Addison Wesley. http://www.cise.ufl.edu/research/ParallelPatterns/PatternLanguage/AlgorithmStructure/Pipeline.htm  
