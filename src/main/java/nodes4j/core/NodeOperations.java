@@ -12,6 +12,6 @@ public class NodeOperations<T, R> {
 	public Function<T, R> mapper;
 	public Consumer<T> action;
 	/* eager */
-	public Function<List<T>, List<R>> mapAsList;
+	public Function<List<T>, List<R>> flatMap;
 	public BinaryOperator<List<R>> accumulator;
 }

@@ -16,7 +16,7 @@ public class SortProcess<T extends Comparable<? super T>> extends Process<T, T> 
 	public SortProcess(String name, final SortType type) {
 		super(name);
 
-		mapAsList(new Function<List<T>, List<T>>() {
+		flatMap(new Function<List<T>, List<T>>() {
 			@Override
 			public List<T> apply(List<T> list) {
 				List<T> result = new ArrayList<>(list);

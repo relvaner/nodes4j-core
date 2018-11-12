@@ -45,8 +45,8 @@ public class ProcessAction<T, R> {
 		return this;
 	}
 	
-	public ProcessAction<T, R> mapAsList(Function<List<T>, List<R>> mapper) {
-		process.node.operations.mapAsList = mapper;
+	public ProcessAction<T, R> flatMap(Function<List<T>, List<R>> mapper) {
+		process.node.operations.flatMap = mapper;
 		return this;
 	}
 	

@@ -39,7 +39,7 @@ public class Process<T, R> {
 	public Process(Function<List<T>, List<R>> mapper, BinaryOperator<List<R>> accumulator) {
 		this();
 		
-		node.operations.mapAsList = mapper;
+		node.operations.flatMap = mapper;
 		node.operations.accumulator = accumulator;
 	}
 	
@@ -67,8 +67,8 @@ public class Process<T, R> {
 		return processAction.forEach(action);
 	}
 	
-	public ProcessAction<T, R> mapAsList(Function<List<T>, List<R>> mapper) {
-		return processAction.mapAsList(mapper);
+	public ProcessAction<T, R> flatMap(Function<List<T>, List<R>> mapper) {
+		return processAction.flatMap(mapper);
 	}
 	
 	public ProcessAction<T, R> reduce(BinaryOperator<List<R>> accumulator) {
