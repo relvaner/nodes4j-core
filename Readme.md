@@ -49,6 +49,11 @@ process1
     .flatMap(...)
     .reduce(…)
     
+    // or with Java Stream API
+    .data(...)
+    .stream(s -> s.filter(...).map(...).collect(Collectors.toList()))
+    .reduce(…)
+    
     // sorting as inter-process operation
     .sortedASC() or .sortedDESC()
 

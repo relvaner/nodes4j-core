@@ -9,6 +9,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import nodes4j.core.Node;
 
@@ -65,6 +66,10 @@ public class Process<T, R> {
 	
 	public ProcessOperations<T, R> forEach(Consumer<T> forEachOp) {
 		return processOperations.forEach(forEachOp);
+	}
+	
+	public ProcessOperations<T, R> stream(Function<Stream<T>, List<R>> streamOp) {
+		return processOperations.stream(streamOp);
 	}
 	
 	public ProcessOperations<T, R> flatMap(Function<List<T>, List<R>> flatMapOp) {

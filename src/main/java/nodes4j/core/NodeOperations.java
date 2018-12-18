@@ -5,6 +5,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class NodeOperations<T, R> {
 	/* lazy  */
@@ -12,6 +13,7 @@ public class NodeOperations<T, R> {
 	public Function<T, R> mapOp;
 	public Consumer<T> forEachOp;
 	/* eager */
+	public Function<Stream<T>, List<R>> streamOp; /* Java Streams */
 	public Function<List<T>, List<R>> flatMapOp;
 	public BinaryOperator<List<R>> reduceOp;
 }

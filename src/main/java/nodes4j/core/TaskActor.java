@@ -95,7 +95,9 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 			if (message.tag==TASK && message.value!=null && message.value instanceof ImmutableList) {
 				ImmutableList<T> immutableList = (ImmutableList<T>)message.value;
 				
-				if (operations.flatMapOp!=null)
+				if (operations.streamOp!=null)
+					result.setValue(operations.streamOp.apply(immutableList.get().stream()));
+				else if (operations.flatMapOp!=null)
 					result.setValue(operations.flatMapOp.apply(immutableList.get()));
 				else {
 					List<R> list = new ArrayList<>(immutableList.get().size());

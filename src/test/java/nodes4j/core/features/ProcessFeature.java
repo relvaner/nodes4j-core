@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -282,6 +283,33 @@ public class ProcessFeature {
 				assertEquals(postConditionList, manager.getResult("process_sort_asc")); 
 				testDone.countDown();})
 			.start(process_a, process_b);
+		
+		try {
+			testDone.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test(timeout=5000)
+	public void test_stream_desc() {
+		final Double[] postcondition_numbers = { 9357.0, 223.0, 199.0, 178.0, 145.0, 134.0, 131.0, 114.0, 108.0, 103.0, 102.0, 102.0, 101.0, 101.0, 101.0 };
+		List<Double> postConditionList = new ArrayList<>();
+		postConditionList.addAll(Arrays.asList(postcondition_numbers));
+		
+		Process<Integer, Double> process = new Process<>();
+		process
+			.data(preConditionList)
+			.stream(s -> s.filter(v -> v>0).map(v -> v+100d).collect(Collectors.toList()))
+			.sortedDESC();
+			
+		ProcessManager manager = new ProcessManager();
+		manager
+			.onTermination(() -> { 
+				assertEquals(postConditionList, manager.getFirstResult()); 
+				logger().debug(manager.getFirstResult()); 
+				testDone.countDown();})
+			.start(process);
 		
 		try {
 			testDone.await();

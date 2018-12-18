@@ -5,6 +5,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import nodes4j.core.exceptions.DataException;
 import nodes4j.core.pa.utils.SortProcess;
@@ -42,6 +43,11 @@ public class ProcessOperations<T, R> {
 	
 	public ProcessOperations<T, R> forEach(Consumer<T> forEachOp) {
 		process.node.operations.forEachOp = forEachOp;
+		return this;
+	}
+
+	public ProcessOperations<T, R> stream(Function<Stream<T>, List<R>> streamOp) {
+		process.node.operations.streamOp = streamOp;
 		return this;
 	}
 	
