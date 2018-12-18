@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import io.reactivex.Observable;
 import nodes4j.core.Node;
 
 public class Process<T, R> {
@@ -68,12 +69,16 @@ public class Process<T, R> {
 		return processOperations.forEach(forEachOp);
 	}
 	
+	public ProcessOperations<T, R> flatMap(Function<List<T>, List<R>> flatMapOp) {
+		return processOperations.flatMap(flatMapOp);
+	}
+	
 	public ProcessOperations<T, R> stream(Function<Stream<T>, List<R>> streamOp) {
 		return processOperations.stream(streamOp);
 	}
 	
-	public ProcessOperations<T, R> flatMap(Function<List<T>, List<R>> flatMapOp) {
-		return processOperations.flatMap(flatMapOp);
+	public ProcessOperations<T, R> streamRx(Function<Observable<T>, Observable<R>> streamRxOp) {
+		return processOperations.streamRx(streamRxOp);
 	}
 	
 	public ProcessOperations<T, R> reduce(BinaryOperator<List<R>> reduceOp) {

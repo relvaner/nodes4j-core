@@ -54,6 +54,11 @@ process1
     .stream(s -> s.filter(...).map(...).collect(Collectors.toList()))
     .reduce(…)
     
+    // or with RxJava 2
+    .data(...)
+    .streamRx(o -> o.filter(...).map(...))
+    .reduce(…)
+    
     // sorting as inter-process operation
     .sortedASC() or .sortedDESC()
 

@@ -14,6 +14,7 @@ import actor4j.core.immutable.ImmutableList;
 import actor4j.core.messages.ActorMessage;
 import actor4j.core.utils.ActorGroup;
 import actor4j.core.utils.ActorGroupList;
+import io.reactivex.Observable;
 
 import static actor4j.core.utils.CommPattern.*;
 import static nodes4j.core.ActorMessageTag.*;
@@ -97,6 +98,13 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 				
 				if (operations.streamOp!=null)
 					result.setValue(operations.streamOp.apply(immutableList.get().stream()));
+				else if (operations.streamRxOp!=null) {
+					Observable<R> observable = operations.streamRxOp.apply(Observable.fromIterable(immutableList.get()));
+					observable.toList().subscribe(list -> result.setValue(list));
+					/*
+					 * result.setValue(observable.toList().blockingGet());
+					 */
+				}
 				else if (operations.flatMapOp!=null)
 					result.setValue(operations.flatMapOp.apply(immutableList.get()));
 				else {

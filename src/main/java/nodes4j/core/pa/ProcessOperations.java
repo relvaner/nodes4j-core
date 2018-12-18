@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import io.reactivex.Observable;
 import nodes4j.core.exceptions.DataException;
 import nodes4j.core.pa.utils.SortProcess;
 import nodes4j.core.pa.utils.SortType;
@@ -46,13 +47,18 @@ public class ProcessOperations<T, R> {
 		return this;
 	}
 
+	public ProcessOperations<T, R> flatMap(Function<List<T>, List<R>> flatMapOp) {
+		process.node.operations.flatMapOp = flatMapOp;
+		return this;
+	}
+
 	public ProcessOperations<T, R> stream(Function<Stream<T>, List<R>> streamOp) {
 		process.node.operations.streamOp = streamOp;
 		return this;
 	}
 	
-	public ProcessOperations<T, R> flatMap(Function<List<T>, List<R>> flatMapOp) {
-		process.node.operations.flatMapOp = flatMapOp;
+	public ProcessOperations<T, R> streamRx(Function<Observable<T>, Observable<R>> streamRxOp) {
+		process.node.operations.streamRxOp = streamRxOp;
 		return this;
 	}
 	
