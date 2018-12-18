@@ -10,14 +10,14 @@ import nodes4j.core.exceptions.DataException;
 import nodes4j.core.pa.utils.SortProcess;
 import nodes4j.core.pa.utils.SortType;
 
-public class ProcessAction<T, R> {
+public class ProcessOperations<T, R> {
 	protected Process<T, R> process;
 	
-	public ProcessAction(Process<T, R> process) {
+	public ProcessOperations(Process<T, R> process) {
 		this.process = process;
 	}
 	
-	public ProcessAction<T, R> data(List<T> data, int min_range) {
+	public ProcessOperations<T, R> data(List<T> data, int min_range) {
 		checkData(data);
 		
 		process.node.data = data;
@@ -26,41 +26,41 @@ public class ProcessAction<T, R> {
 		return this;
 	}
 	
-	public ProcessAction<T, R> data(List<T> data) {
+	public ProcessOperations<T, R> data(List<T> data) {
 		return data(data, -1);
 	}
 	
-	public ProcessAction<T, R> filter(Predicate<T> predicate) {
-		process.node.operations.filter = predicate;
+	public ProcessOperations<T, R> filter(Predicate<T> filterOp) {
+		process.node.operations.filterOp = filterOp;
 		return this;
 	}
 	
-	public ProcessAction<T, R> map(Function<T, R> mapper) {
-		process.node.operations.mapper = mapper;
+	public ProcessOperations<T, R> map(Function<T, R> mapOp) {
+		process.node.operations.mapOp = mapOp;
 		return this;
 	}
 	
-	public ProcessAction<T, R> forEach(Consumer<T> action) {
-		process.node.operations.action = action;
+	public ProcessOperations<T, R> forEach(Consumer<T> forEachOp) {
+		process.node.operations.forEachOp = forEachOp;
 		return this;
 	}
 	
-	public ProcessAction<T, R> flatMap(Function<List<T>, List<R>> mapper) {
-		process.node.operations.flatMap = mapper;
+	public ProcessOperations<T, R> flatMap(Function<List<T>, List<R>> flatMapOp) {
+		process.node.operations.flatMapOp = flatMapOp;
 		return this;
 	}
 	
-	public ProcessAction<T, R> reduce(BinaryOperator<List<R>> accumulator) {
-		process.node.operations.accumulator = accumulator;
+	public ProcessOperations<T, R> reduce(BinaryOperator<List<R>> reduceOp) {
+		process.node.operations.reduceOp = reduceOp;
 		return this;
 	}	
 	
-	public ProcessAction<?, ?> sortedASC() {
+	public ProcessOperations<?, ?> sortedASC() {
 		process.sequence(new SortProcess<>(SortType.SORT_ASCENDING));
 		return this;
 	}
 	
-	public ProcessAction<?, ?> sortedDESC() {
+	public ProcessOperations<?, ?> sortedDESC() {
 		process.sequence(new SortProcess<>(SortType.SORT_DESCENDING));
 		return this;
 	}

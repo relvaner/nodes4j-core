@@ -19,7 +19,7 @@ public class Process<T, R> {
 	protected Map<UUID, List<?>> result; // initial set over ProcessManager
 	protected Map<String, UUID> aliases; // initial set over ProcessManager
 	
-	protected ProcessAction<T, R> processAction;
+	protected ProcessOperations<T, R> processOperations;
 	
 	public Process() {
 		this(null);
@@ -33,54 +33,54 @@ public class Process<T, R> {
 		node.sucs = new HashSet<>();
 		node.pres = new HashSet<>();
 		
-		processAction = new ProcessAction<>(this);
+		processOperations = new ProcessOperations<>(this);
 	}
 	
-	public Process(Function<List<T>, List<R>> mapper, BinaryOperator<List<R>> accumulator) {
+	public Process(Function<List<T>, List<R>> flatMapOp, BinaryOperator<List<R>> reduceOp) {
 		this();
 		
-		node.operations.flatMap = mapper;
-		node.operations.accumulator = accumulator;
+		node.operations.flatMapOp = flatMapOp;
+		node.operations.reduceOp = reduceOp;
 	}
 	
 	public UUID getId() {
 		return node.id;
 	}
 	
-	public ProcessAction<T, R> data(List<T> data, int min_range) {
-		return processAction.data(data, min_range);
+	public ProcessOperations<T, R> data(List<T> data, int min_range) {
+		return processOperations.data(data, min_range);
 	}
 	
-	public ProcessAction<T, R> data(List<T> data) {
-		return processAction.data(data);
+	public ProcessOperations<T, R> data(List<T> data) {
+		return processOperations.data(data);
 	}
 	
-	public ProcessAction<T, R> filter(Predicate<T> predicate) {
-		return processAction.filter(predicate);
+	public ProcessOperations<T, R> filter(Predicate<T> filterOp) {
+		return processOperations.filter(filterOp);
 	}
 	
-	public ProcessAction<T, R> map(Function<T, R> mapper) {
-		return processAction.map(mapper);
+	public ProcessOperations<T, R> map(Function<T, R> mapOp) {
+		return processOperations.map(mapOp);
 	}
 	
-	public ProcessAction<T, R> forEach(Consumer<T> action) {
-		return processAction.forEach(action);
+	public ProcessOperations<T, R> forEach(Consumer<T> forEachOp) {
+		return processOperations.forEach(forEachOp);
 	}
 	
-	public ProcessAction<T, R> flatMap(Function<List<T>, List<R>> mapper) {
-		return processAction.flatMap(mapper);
+	public ProcessOperations<T, R> flatMap(Function<List<T>, List<R>> flatMapOp) {
+		return processOperations.flatMap(flatMapOp);
 	}
 	
-	public ProcessAction<T, R> reduce(BinaryOperator<List<R>> accumulator) {
-		return processAction.reduce(accumulator);
+	public ProcessOperations<T, R> reduce(BinaryOperator<List<R>> reduceOp) {
+		return processOperations.reduce(reduceOp);
 	}	
 	
-	public ProcessAction<?, ?> sortedASC() {
-		return processAction.sortedASC();
+	public ProcessOperations<?, ?> sortedASC() {
+		return processOperations.sortedASC();
 	}
 	
-	public ProcessAction<?, ?> sortedDESC() {
-		return processAction.sortedDESC();
+	public ProcessOperations<?, ?> sortedDESC() {
+		return processOperations.sortedDESC();
 	}
 			
 	public <S> Process<R, S> sequence(Process<R, S> process) {

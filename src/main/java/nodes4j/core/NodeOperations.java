@@ -8,10 +8,10 @@ import java.util.function.Predicate;
 
 public class NodeOperations<T, R> {
 	/* lazy  */
-	public Predicate<T> filter;
-	public Function<T, R> mapper;
-	public Consumer<T> action;
+	public Predicate<T> filterOp;
+	public Function<T, R> mapOp;
+	public Consumer<T> forEachOp;
 	/* eager */
-	public Function<List<T>, List<R>> flatMap;
-	public BinaryOperator<List<R>> accumulator;
+	public Function<List<T>, List<R>> flatMapOp;
+	public BinaryOperator<List<R>> reduceOp;
 }

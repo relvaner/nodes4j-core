@@ -20,7 +20,7 @@ import static nodes4j.core.ActorMessageTag.*;
 
 public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMember {
 	protected NodeOperations<T, R> operations;
-	protected BinaryOperator<List<R>> defaultAccumulator;
+	protected BinaryOperator<List<R>> defaultReduceOp;
 	protected ActorGroupList group;
 	protected ActorGroup hubGroup;
 	protected int dest_tag;
@@ -32,7 +32,7 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 		super(name);
 		
 		this.operations = operations;
-		defaultAccumulator = new BinaryOperator<List<R>>() {
+		defaultReduceOp = new BinaryOperator<List<R>>() {
 			@Override
 			public List<R> apply(List<R> left, List<R> right) {
 				List<R> result = new ArrayList<>(left.size()+right.size());
@@ -65,10 +65,10 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 		else if (message.tag==REDUCE && message.value!=null && message.value instanceof ImmutableList){
 			List<R> buf = ((ImmutableList<R>)message.value).get();
 			//System.out.printf("[level: %d] rank %d has received a message (%s) from rank %d%n", level, group.indexOf(self()), buf.toString(), group.indexOf(message.source));
-			if (operations.accumulator!=null)
-				result.setValue(operations.accumulator.apply(result.getValue(), buf));
+			if (operations.reduceOp!=null)
+				result.setValue(operations.reduceOp.apply(result.getValue(), buf));
 			else
-				result.setValue(    defaultAccumulator.apply(result.getValue(), buf));
+				result.setValue(    defaultReduceOp.apply(result.getValue(), buf));
 			
 			level++;
 			message.tag = TASK;
@@ -95,20 +95,20 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 			if (message.tag==TASK && message.value!=null && message.value instanceof ImmutableList) {
 				ImmutableList<T> immutableList = (ImmutableList<T>)message.value;
 				
-				if (operations.flatMap!=null)
-					result.setValue(operations.flatMap.apply(immutableList.get()));
+				if (operations.flatMapOp!=null)
+					result.setValue(operations.flatMapOp.apply(immutableList.get()));
 				else {
 					List<R> list = new ArrayList<>(immutableList.get().size());
 					for (T t : immutableList.get()) {
-						if (operations.filter!=null)
-							if (!operations.filter.test(t))
+						if (operations.filterOp!=null)
+							if (!operations.filterOp.test(t))
 								continue;
-						if (operations.mapper!=null)
-							list.add(operations.mapper.apply(t));
+						if (operations.mapOp!=null)
+							list.add(operations.mapOp.apply(t));
 						else
 							list.add((R)t);
-						if (operations.action!=null)
-							operations.action.accept(t);	
+						if (operations.forEachOp!=null)
+							operations.forEachOp.accept(t);	
 					}
 					result.setValue(list);
 				}

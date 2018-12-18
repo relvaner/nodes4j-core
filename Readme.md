@@ -44,6 +44,11 @@ process1
     .forEach(...)
     .reduce(…)
     
+    // or
+    .data(...)
+    .flatMap(...)
+    .reduce(…)
+    
     // sorting as inter-process operation
     .sortedASC() or .sortedDESC()
 
