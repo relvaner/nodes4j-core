@@ -115,8 +115,13 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 					 * result.setValue(observable.toList().blockingGet());
 					 */
 				}
-				else if (operations.flatMapOp!=null)
-					result.setValue(operations.flatMapOp.apply(immutableList.get()));
+				else if (operations.flatMapOp!=null) {
+					List<R> list = operations.flatMapOp.apply(immutableList.get());
+					if (list!=null)
+						result.setValue(list);
+					else
+						result.setValue(new ArrayList<R>());
+				}
 				else {
 					List<R> list = new ArrayList<>(immutableList.get().size());
 					for (T t : immutableList.get()) {
