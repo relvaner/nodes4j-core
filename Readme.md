@@ -51,7 +51,7 @@ process1
     
     // or with Java Stream API
     .data(...)
-    .stream(s -> s.filter(...).map(...).collect(Collectors.toList()))
+    .stream(s -> s.filter(...).map(...))
     .reduce(…)
     
     // or with RxJava 2
