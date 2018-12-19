@@ -18,6 +18,6 @@ public class NodeOperations<T, R> {
 	public Function<List<T>, List<R>> flatMapOp;
 	public BinaryOperator<List<R>> reduceOp;
 	
-	public Function<Stream<T>, List<R>> streamOp; /* Java Streams */
+	public Function<Stream<T>, Stream<R>> streamOp; /* Java Streams */
 	public Function<Observable<T>, Observable<R>> streamRxOp; /* RxJava */
 }

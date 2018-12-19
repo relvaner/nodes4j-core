@@ -73,7 +73,7 @@ public class Process<T, R> {
 		return processOperations.flatMap(flatMapOp);
 	}
 	
-	public ProcessOperations<T, R> stream(Function<Stream<T>, List<R>> streamOp) {
+	public ProcessOperations<T, R> stream(Function<Stream<T>, Stream<R>> streamOp) {
 		return processOperations.stream(streamOp);
 	}
 	

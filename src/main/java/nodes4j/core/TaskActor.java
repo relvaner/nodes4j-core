@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.UUID;
 import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -96,11 +98,19 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 			if (message.tag==TASK && message.value!=null && message.value instanceof ImmutableList) {
 				ImmutableList<T> immutableList = (ImmutableList<T>)message.value;
 				
-				if (operations.streamOp!=null)
-					result.setValue(operations.streamOp.apply(immutableList.get().stream()));
+				if (operations.streamOp!=null) {
+					Stream<R> stream = operations.streamOp.apply(immutableList.get().stream());
+					if (stream!=null)
+						result.setValue(stream.collect(Collectors.toList()));
+					else
+						result.setValue(new ArrayList<R>());
+				}
 				else if (operations.streamRxOp!=null) {
 					Observable<R> observable = operations.streamRxOp.apply(Observable.fromIterable(immutableList.get()));
-					observable.toList().subscribe(list -> result.setValue(list));
+					if (observable!=null)
+						observable.toList().subscribe(list -> result.setValue(list));
+					else
+						result.setValue(new ArrayList<R>());
 					/*
 					 * result.setValue(observable.toList().blockingGet());
 					 */

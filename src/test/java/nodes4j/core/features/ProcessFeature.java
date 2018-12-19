@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -300,7 +299,7 @@ public class ProcessFeature {
 		Process<Integer, Double> process = new Process<>();
 		process
 			.data(preConditionList)
-			.stream(s -> s.filter(v -> v>0).map(v -> v+100d).collect(Collectors.toList()))
+			.stream(s -> s.filter(v -> v>0).map(v -> v+100d))
 			.sortedDESC();
 			
 		ProcessManager manager = new ProcessManager();

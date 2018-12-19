@@ -52,7 +52,7 @@ public class ProcessOperations<T, R> {
 		return this;
 	}
 
-	public ProcessOperations<T, R> stream(Function<Stream<T>, List<R>> streamOp) {
+	public ProcessOperations<T, R> stream(Function<Stream<T>, Stream<R>> streamOp) {
 		process.node.operations.streamOp = streamOp;
 		return this;
 	}
