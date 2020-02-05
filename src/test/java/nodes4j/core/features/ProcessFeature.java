@@ -14,7 +14,7 @@ import nodes4j.core.pa.utils.SortProcess;
 import nodes4j.core.pa.utils.SortType;
 
 import static org.junit.Assert.*;
-import static actor4j.core.utils.ActorLogger.logger;
+import static io.actor4j.core.utils.ActorLogger.logger;
 
 public class ProcessFeature {
 	protected CountDownLatch testDone = new CountDownLatch(1);

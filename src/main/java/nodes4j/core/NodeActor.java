@@ -7,16 +7,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import actor4j.core.actors.Actor;
-import actor4j.core.immutable.ImmutableList;
-import actor4j.core.messages.ActorMessage;
-import actor4j.core.utils.ActorFactory;
-import actor4j.core.utils.ActorGroup;
-import actor4j.core.utils.ActorGroupList;
-import actor4j.core.utils.ActorGroupSet;
+import io.actor4j.core.actors.Actor;
+import io.actor4j.core.immutable.ImmutableList;
+import io.actor4j.core.messages.ActorMessage;
+import io.actor4j.core.utils.ActorFactory;
+import io.actor4j.core.utils.ActorGroup;
+import io.actor4j.core.utils.ActorGroupList;
+import io.actor4j.core.utils.ActorGroupSet;
 import nodes4j.core.exceptions.DataException;
 
-import static actor4j.core.utils.CommPattern.*;
+import static io.actor4j.core.utils.CommPattern.*;
 import static nodes4j.core.ActorMessageTag.*;
 
 public class NodeActor<T, R> extends Actor {

@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import actor4j.core.ActorSystem;
-import actor4j.core.actors.Actor;
-import actor4j.core.messages.ActorMessage;
-import actor4j.core.utils.ActorFactory;
-import actor4j.core.utils.ActorGroup;
-import actor4j.core.utils.ActorGroupSet;
+import io.actor4j.core.ActorSystem;
+import io.actor4j.core.actors.Actor;
+import io.actor4j.core.messages.ActorMessage;
+import io.actor4j.core.utils.ActorFactory;
+import io.actor4j.core.utils.ActorGroup;
+import io.actor4j.core.utils.ActorGroupSet;
 import nodes4j.core.NodeActor;
 
 public class ProcessManager {
