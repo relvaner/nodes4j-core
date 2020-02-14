@@ -71,6 +71,38 @@ process1
         
 process8.merge(process6, process7);
 ```
+## Example ##
+
+```java
+Process<Integer, Integer> process_main = new Process<>("process_main");
+process_main
+	.data(List.of(14, 31, 34, 45, 78, 99, 123, 9257));
+		
+Process<Integer, Integer> process_a = new Process<>("process_a");
+process_a
+	.filter((v) -> v>50 && v<100)
+	.map((v) -> v+2);
+Process<Integer, Integer> process_b = new Process<>("process_b");
+process_b
+	.filter((v) -> v>0 && v<=50)
+	.map((v) -> v+1);
+Process<Integer, Integer> process_sort_asc = new SortProcess<Integer>("process_sort_asc",
+	SortType.SORT_ASCENDING);		
+		
+process_main.parallel(process_a, process_b);
+process_sort_asc.merge(process_a, process_b);
+		
+ProcessManager manager = new ProcessManager(true);
+manager
+	.onTermination(() -> { 
+		logger().debug("Data (process_a): "+manager.getData("process_a")); 
+		logger().debug("Data (process_a): "+process_a.getData()); 
+		logger().debug("Data (process_b): "+manager.getData("process_b")); 
+		logger().debug("Data (process_sort_asc): "+manager.getData("process_sort_asc")); 
+		logger().debug("Result (process_sort_asc): "+manager.getResult("process_sort_asc")); 
+	})
+	.start(process_main);
+```
 
 ## License ##
 This framework is released under an open source Apache 2.0 license.
