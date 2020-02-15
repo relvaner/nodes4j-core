@@ -1,4 +1,4 @@
-package nodes4j.core.pa.utils;
+package io.actor4j.nodes.core.pa.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
-import nodes4j.core.pa.Process;
+import io.actor4j.nodes.core.pa.Process;
 
 public class SortProcess<T extends Comparable<? super T>> extends Process<T, T> {
 	public SortProcess(final SortType type) {
