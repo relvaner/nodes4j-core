@@ -29,7 +29,7 @@ import io.actor4j.nodes.core.pa.utils.SortProcess;
 import io.actor4j.nodes.core.pa.utils.SortType;
 
 import static org.junit.Assert.*;
-import static io.actor4j.core.utils.ActorLogger.logger;
+import static io.actor4j.core.logging.ActorLogger.*;
 
 public class ProcessFeature {
 	protected CountDownLatch testDone = new CountDownLatch(1);
@@ -63,7 +63,7 @@ public class ProcessFeature {
 		manager
 			.onTermination(() -> { 
 				assertEquals(postConditionList, manager.getFirstResult()); 
-				logger().debug(manager.getFirstResult()); 
+				logger().log(DEBUG, manager.getFirstResult().toString()); 
 				testDone.countDown();})
 			.start(process);
 		
@@ -92,7 +92,7 @@ public class ProcessFeature {
 		manager
 			.onTermination(() -> { 
 				assertEquals(postConditionList, manager.getFirstResult()); 
-				logger().debug(manager.getFirstResult()); 
+				logger().log(DEBUG, manager.getFirstResult().toString()); 
 				testDone.countDown();})
 			.start(process);
 		
@@ -119,7 +119,7 @@ public class ProcessFeature {
 		manager
 			.onTermination(() -> { 
 				assertEquals(postConditionList, manager.getFirstResult()); 
-				logger().debug(manager.getFirstResult()); 
+				logger().log(DEBUG, manager.getFirstResult().toString()); 
 				testDone.countDown();})
 			.start(process);
 		
@@ -145,10 +145,10 @@ public class ProcessFeature {
 		ProcessManager manager = new ProcessManager(true);
 		manager
 			.onTermination(() -> { 
-				logger().debug("Data (process_main): "+manager.getData("process_main"));
-				logger().debug("Data (process_sort_asc): "+manager.getData("process_sort_asc"));
+				logger().log(DEBUG, "Data (process_main): "+manager.getData("process_main"));
+				logger().log(DEBUG, "Data (process_sort_asc): "+manager.getData("process_sort_asc"));
 				assertEquals(postConditionList, manager.getResult("process_sort_asc")); 
-				logger().debug("Result (process_sort_asc): "+manager.getResult("process_sort_asc")); 
+				logger().log(DEBUG, "Result (process_sort_asc): "+manager.getResult("process_sort_asc")); 
 				testDone.countDown();})
 			.start(process);
 		
@@ -193,9 +193,9 @@ public class ProcessFeature {
 				assertEquals(postConditionList1, manager.getResult("process_sort_asc1")); 
 				assertEquals(postConditionList2, manager.getData("process_filter")); 
 				assertTrue(postConditionList3.containsAll(manager.getResult("process_filter")));
-				logger().debug("Result (process_sort_asc1): "+manager.getResult("process_sort_asc1")); 
-				logger().debug("Result (process_sort_asc2): "+manager.getData("process_filter")); 
-				logger().debug("Result (process_filter): "+manager.getResult("process_filter")); 
+				logger().log(DEBUG, "Result (process_sort_asc1): "+manager.getResult("process_sort_asc1")); 
+				logger().log(DEBUG, "Result (process_sort_asc2): "+manager.getData("process_filter")); 
+				logger().log(DEBUG, "Result (process_filter): "+manager.getResult("process_filter")); 
 				testDone.countDown();})
 			.start(process);
 		
@@ -239,11 +239,11 @@ public class ProcessFeature {
 		ProcessManager manager = new ProcessManager(true);
 		manager
 			.onTermination(() -> { 
-				logger().debug("Data (process_a): "+manager.getData("process_a")); 
-				logger().debug("Data (process_a): "+process_a.getData()); 
-				logger().debug("Data (process_b): "+manager.getData("process_b")); 
-				logger().debug("Data (process_sort_asc): "+manager.getData("process_sort_asc")); 
-				logger().debug("Result (process_sort_asc): "+manager.getResult("process_sort_asc")); 
+				logger().log(DEBUG, "Data (process_a): "+manager.getData("process_a")); 
+				logger().log(DEBUG, "Data (process_a): "+process_a.getData()); 
+				logger().log(DEBUG, "Data (process_b): "+manager.getData("process_b")); 
+				logger().log(DEBUG, "Data (process_sort_asc): "+manager.getData("process_sort_asc")); 
+				logger().log(DEBUG, "Result (process_sort_asc): "+manager.getResult("process_sort_asc")); 
 				assertTrue(preConditionList.containsAll(manager.getData("process_a")));
 				assertTrue(preConditionList.containsAll(manager.getData("process_b")));
 				//logger().debug("Result (process_a): "+manager.getResult("process_a")); 
@@ -287,11 +287,11 @@ public class ProcessFeature {
 		ProcessManager manager = new ProcessManager(true);
 		manager
 			.onTermination(() -> { 
-				logger().debug("Data (process_a): "+manager.getData("process_a")); 
-				logger().debug("Data (process_a): "+process_a.getData()); 
-				logger().debug("Data (process_b): "+manager.getData("process_b")); 
-				logger().debug("Data (process_sort_asc): "+manager.getData("process_sort_asc")); 
-				logger().debug("Result (process_sort_asc): "+manager.getResult("process_sort_asc")); 
+				logger().log(DEBUG, "Data (process_a): "+manager.getData("process_a")); 
+				logger().log(DEBUG, "Data (process_a): "+process_a.getData()); 
+				logger().log(DEBUG, "Data (process_b): "+manager.getData("process_b")); 
+				logger().log(DEBUG, "Data (process_sort_asc): "+manager.getData("process_sort_asc")); 
+				logger().log(DEBUG, "Result (process_sort_asc): "+manager.getResult("process_sort_asc")); 
 				assertTrue(preConditionList1.containsAll(manager.getData("process_a")));
 				assertTrue(preConditionList2.containsAll(manager.getData("process_b")));
 				assertEquals(postConditionList, manager.getResult("process_sort_asc")); 
@@ -321,7 +321,7 @@ public class ProcessFeature {
 		manager
 			.onTermination(() -> { 
 				assertEquals(postConditionList, manager.getFirstResult()); 
-				logger().debug(manager.getFirstResult()); 
+				logger().log(DEBUG, manager.getFirstResult().toString()); 
 				testDone.countDown();})
 			.start(process);
 		
@@ -348,7 +348,7 @@ public class ProcessFeature {
 		manager
 			.onTermination(() -> { 
 				assertEquals(postConditionList, manager.getFirstResult()); 
-				logger().debug(manager.getFirstResult()); 
+				logger().log(DEBUG, manager.getFirstResult().toString()); 
 				testDone.countDown();})
 			.start(process);
 		

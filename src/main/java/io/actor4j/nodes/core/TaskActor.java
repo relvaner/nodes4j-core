@@ -67,7 +67,7 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 		level = -1;
 		
 		stash = new PriorityQueue<ActorMessage<?>>(11, (m1, m2) -> { 
-			return Integer.valueOf(m1.protocol).compareTo(Integer.valueOf(m2.protocol)); 
+			return Integer.valueOf(m1.protocol()).compareTo(Integer.valueOf(m2.protocol())); 
 		} );
 	}
 
@@ -77,11 +77,11 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 		if (grank%(1<<(level+1))>0) { 
 			int dest = grank-(1<<level);
 			//System.out.printf("[level: %d] rank %d has sended a message (%s) to rank %d%n", level, group.indexOf(self()), result.getValue().toString(), dest);
-			send(new ActorMessage<>(new ImmutableList<R>(result.getValue()), REDUCE, self(), group.get(dest), null, String.valueOf(level+1), null));
+			send(ActorMessage.create(new ImmutableList<R>(result.getValue()), REDUCE, self(), group.get(dest), null, String.valueOf(level+1), null));
 			stop();
 		}
-		else if (message.tag==REDUCE && message.value!=null && message.value instanceof ImmutableList){
-			List<R> buf = ((ImmutableList<R>)message.value).get();
+		else if (message.tag()==REDUCE && message.value()!=null && message.value() instanceof ImmutableList){
+			List<R> buf = ((ImmutableList<R>)message.value()).get();
 			//System.out.printf("[level: %d] rank %d has received a message (%s) from rank %d%n", level, group.indexOf(self()), buf.toString(), group.indexOf(message.source));
 			if (operations.reduceOp!=null)
 				result.setValue(operations.reduceOp.apply(result.getValue(), buf));
@@ -89,14 +89,13 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 				result.setValue(    defaultReduceOp.apply(result.getValue(), buf));
 			
 			level++;
-			message.tag = TASK;
-			treeReduction(message);
+			treeReduction(message.shallowCopy(TASK));
 		}
 		else {
 			int source = grank+(1<<level);
 			if (source>group.size()-1)
 				if (grank==0) {
-					broadcast(new ActorMessage<>(new ImmutableList<R>(result.getValue()), dest_tag, self(), null), this, hubGroup);
+					broadcast(ActorMessage.create(new ImmutableList<R>(result.getValue()), dest_tag, self(), null), this, hubGroup);
 					stop();
 					return;
 				} else {
@@ -110,8 +109,8 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 	@Override
 	public void receive(ActorMessage<?> message) {
 		if (level<0) {
-			if (message.tag==TASK && message.value!=null && message.value instanceof ImmutableList) {
-				ImmutableList<T> immutableList = (ImmutableList<T>)message.value;
+			if (message.tag()==TASK && message.value()!=null && message.value() instanceof ImmutableList) {
+				ImmutableList<T> immutableList = (ImmutableList<T>)message.value();
 				
 				if (operations.streamOp!=null) {
 					Stream<R> stream = operations.streamOp.apply(immutableList.get().stream());
@@ -160,11 +159,11 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 				treeReduction(message);
 				dissolveStash();
 			} 
-			else if (message.tag==REDUCE) {
+			else if (message.tag()==REDUCE) {
 				stash.offer(message);
 			}
 		}
-		else if (message.tag==REDUCE) {
+		else if (message.tag()==REDUCE) {
 			stash.offer(message);
 			dissolveStash();
 		}
@@ -173,7 +172,7 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 	protected void dissolveStash() {
 		ActorMessage<?> message = null;
 		while ((message = stash.peek())!=null) {
-			if (Integer.valueOf(message.protocol)==level+1)
+			if (Integer.valueOf(message.protocol())==level+1)
 				treeReduction(stash.poll());
 			else
 				break;
@@ -181,7 +180,7 @@ public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMembe
 	}
 
 	@Override
-	public UUID getGroupId() {
+	public UUID getDistributedGroupId() {
 		return group.getId();
 	}
 }

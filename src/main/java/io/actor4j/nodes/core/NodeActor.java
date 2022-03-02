@@ -137,11 +137,11 @@ public class NodeActor<T, R> extends Actor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void receive(ActorMessage<?> message) {
-		if (message.tag==DATA) {
+		if (message.tag()==DATA) {
 			waitForParents--;
 			
-			if (message.value!=null && message.value instanceof ImmutableList)
-				node.data.addAll(((ImmutableList<T>)message.value).get());
+			if (message.value()!=null && message.value() instanceof ImmutableList)
+				node.data.addAll(((ImmutableList<T>)message.value()).get());
 			
 			if (waitForParents<=0) {
 				if (node.sucs==null || node.sucs.size()==0) {
@@ -164,28 +164,28 @@ public class NodeActor<T, R> extends Actor {
 				scatter(node.data, TASK, this, new ActorGroupSet(group));
 			}
 		}
-		else if (message.tag==RESULT) {
+		else if (message.tag()==RESULT) {
 			if (result!=null)
-				result.put(node.id, ((ImmutableList<R>)message.value).get());
+				result.put(node.id, ((ImmutableList<R>)message.value()).get());
 			
 			if (node.isRoot)
 				getSystem().shutdown();
 			else {
 				if (!node.pres.isEmpty()) // has more parents
 					for (Node<?, ?> pre : node.pres) 
-						sendViaAlias(new ActorMessage<>(null, SHUTDOWN, self(), null), "node-"+pre.id.toString());
+						sendViaAlias(ActorMessage.create(null, SHUTDOWN, self(), null), "node-"+pre.id.toString());
 				else
-					send(new ActorMessage<>(null, SHUTDOWN, self(), getParent()));
+					send(ActorMessage.create(null, SHUTDOWN, self(), getParent()));
 			}
 		}
-		else if (message.tag==SHUTDOWN) {
-			waitForChildren.remove(message.source);
+		else if (message.tag()==SHUTDOWN) {
+			waitForChildren.remove(message.source());
 			
 			if (waitForChildren.isEmpty()) {
 				if (node.isRoot)
 					getSystem().shutdown(); // TODO: unsafe
 				else
-					send(new ActorMessage<>(null, SHUTDOWN, self(), getParent()));
+					send(ActorMessage.create(null, SHUTDOWN, self(), getParent()));
 			}
 		}
 	}

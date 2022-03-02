@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.actor4j.core.ActorSystem;
 import io.actor4j.core.actors.Actor;
+import io.actor4j.core.config.ActorSystemConfig;
 import io.actor4j.core.messages.ActorMessage;
 import io.actor4j.core.utils.ActorFactory;
 import io.actor4j.core.utils.ActorGroup;
@@ -66,7 +67,10 @@ public class ProcessManager {
 		result.clear();
 		aliases.clear();
 		
-		system = new ActorSystem("nodes4j");
+		ActorSystemConfig config = ActorSystemConfig.builder()
+			.name("nodes4j")
+			.build();
+		system = new ActorSystem(config);
 		process.node.nTasks = Runtime.getRuntime().availableProcessors()/*stand-alone*/;
 		process.node.isRoot = true;
 		process.data = data;
@@ -80,7 +84,7 @@ public class ProcessManager {
 			}
 		});
 
-		system.send(new ActorMessage<>(null, DATA, root, root));
+		system.send(ActorMessage.create(null, DATA, root, root));
 		system.start(null, onTermination);
 	}
 	
@@ -89,7 +93,10 @@ public class ProcessManager {
 		result.clear();
 		aliases.clear();
 		
-		system = new ActorSystem("nodes4j");
+		ActorSystemConfig config = ActorSystemConfig.builder()
+			.name("nodes4j")
+			.build();
+		system = new ActorSystem(config);
 		int nTasks = Runtime.getRuntime().availableProcessors()/*stand-alone*/;
 		ActorGroup group = new ActorGroupSet();
 		for (Process<?, ?> process : processes) {
@@ -107,7 +114,7 @@ public class ProcessManager {
 			}));
 		}
 		
-		system.broadcast(new ActorMessage<>(null, DATA, system.SYSTEM_ID, null), group);
+		system.broadcast(ActorMessage.create(null, DATA, system.SYSTEM_ID, null), group);
 		system.start(null, onTermination);
 	}
 	
