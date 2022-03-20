@@ -89,10 +89,10 @@ public class NodeActor<T, R> extends Actor {
 				UUID ref = null;
 				if (suc.pres.size()>1) {
 					// uses Double-Check-Idiom a la Bloch
-					ref = getSystem().underlyingImpl().getActorFromAlias("node-"+suc.id.toString());
+					ref = getSystem().getActorFromAlias("node-"+suc.id.toString());
 					if (ref==null) {
 						synchronized(lock) {
-							ref = getSystem().underlyingImpl().getActorFromAlias("node-"+suc.id.toString());
+							ref = getSystem().getActorFromAlias("node-"+suc.id.toString());
 							if (ref==null) {
 								suc.nTasks = node.nTasks; // ATTENTION
 								ref = addChild(new ActorFactory() {

@@ -70,7 +70,7 @@ public class ProcessManager {
 		ActorSystemConfig config = ActorSystemConfig.builder()
 			.name("nodes4j")
 			.build();
-		system = new ActorSystem(config);
+		system = ActorSystem.create(config);
 		process.node.nTasks = Runtime.getRuntime().availableProcessors()/*stand-alone*/;
 		process.node.isRoot = true;
 		process.data = data;
@@ -96,7 +96,7 @@ public class ProcessManager {
 		ActorSystemConfig config = ActorSystemConfig.builder()
 			.name("nodes4j")
 			.build();
-		system = new ActorSystem(config);
+		system = ActorSystem.create(config);
 		int nTasks = Runtime.getRuntime().availableProcessors()/*stand-alone*/;
 		ActorGroup group = new ActorGroupSet();
 		for (Process<?, ?> process : processes) {
@@ -114,7 +114,7 @@ public class ProcessManager {
 			}));
 		}
 		
-		system.broadcast(ActorMessage.create(null, DATA, system.SYSTEM_ID, null), group);
+		system.broadcast(ActorMessage.create(null, DATA, system.SYSTEM_ID(), null), group);
 		system.start(null, onTermination);
 	}
 	
