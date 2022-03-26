@@ -16,6 +16,12 @@
 package io.actor4j.nodes.core.features;
 
 import org.junit.runners.Suite;
+
+import static io.actor4j.core.logging.ActorLogger.ERROR;
+import static io.actor4j.core.logging.ActorLogger.logger;
+import static io.actor4j.core.logging.ActorLogger.systemLogger;
+
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
 @RunWith(Suite.class)
@@ -23,5 +29,9 @@ import org.junit.runner.RunWith;
 	ProcessFeature.class
 })
 public class AllFeaturesTest {
-
+	@BeforeClass
+	public static void beforeClass() {
+		systemLogger().setLevel(ERROR);
+		logger().setLevel(ERROR);
+	}
 }

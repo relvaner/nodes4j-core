@@ -56,7 +56,7 @@ public class ProcessFeature {
 			.data(preConditionList)
 			.filter(v -> v>0)
 			.map(v -> v+100d)
-			.forEach(System.out::println)
+			//.forEach(System.out::println)
 			.sortedDESC();
 			
 		ProcessManager manager = new ProcessManager();
