@@ -13,26 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.actor4j.nodes.core;
+package io.actor4j.nodes.core.internal;
 
 import java.util.List;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.Set;
+import java.util.UUID;
 
-import io.reactivex.Observable;
-
-public class NodeOperations<T, R> {
-	/* lazy  */
-	public Predicate<T> filterOp;
-	public Function<T, R> mapOp;
-	public Consumer<T> forEachOp;
-	/* eager */
-	public Function<List<T>, List<R>> flatMapOp;
-	public BinaryOperator<List<R>> reduceOp;
+public class Node<T, R> {
+	public UUID id;
+	public String alias;
+	public List<T> data;
+	public NodeOperations<T, R> operations;
+	public int nTasks;
+	public int min_range;
+	public Set<Node<?, ?>> sucs; // Set<Node<R, ?>>
+	public Set<Node<?, ?>> pres; // Set<Node<?, T>>
+	public boolean isRoot;
 	
-	public Function<Stream<T>, Stream<R>> streamOp; /* Java Streams */
-	public Function<Observable<T>, Observable<R>> streamRxOp; /* RxJava */
+	public Node(String alias) {
+		super();
+		
+		this.alias = alias;
+		operations = new NodeOperations<>();
+	}
+	
+	public Node() {
+		this(null);
+	}
 }

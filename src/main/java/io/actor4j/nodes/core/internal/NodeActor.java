@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.actor4j.nodes.core;
+package io.actor4j.nodes.core.internal;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -32,7 +32,7 @@ import io.actor4j.core.utils.ActorGroupSet;
 import io.actor4j.nodes.core.exceptions.DataException;
 
 import static io.actor4j.core.utils.CommPattern.*;
-import static io.actor4j.nodes.core.ActorMessageTag.*;
+import static io.actor4j.nodes.core.internal.ActorMessageTag.*;
 
 public class NodeActor<T, R> extends Actor {
 	protected Node<T, R> node;

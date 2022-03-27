@@ -23,10 +23,10 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.actor4j.nodes.core.pa.Process;
-import io.actor4j.nodes.core.pa.ProcessManager;
-import io.actor4j.nodes.core.pa.utils.SortProcess;
-import io.actor4j.nodes.core.pa.utils.SortType;
+import io.actor4j.nodes.core.Process;
+import io.actor4j.nodes.core.ProcessManager;
+import io.actor4j.nodes.core.utils.SortProcess;
+import io.actor4j.nodes.core.utils.SortType;
 
 import static org.junit.Assert.*;
 import static io.actor4j.core.logging.ActorLogger.*;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.actor4j.nodes.core.pa;
+package io.actor4j.nodes.core;
 
 import java.util.List;
 import java.util.function.BinaryOperator;
@@ -23,8 +23,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import io.actor4j.nodes.core.exceptions.DataException;
-import io.actor4j.nodes.core.pa.utils.SortProcess;
-import io.actor4j.nodes.core.pa.utils.SortType;
+import io.actor4j.nodes.core.utils.SortProcess;
+import io.actor4j.nodes.core.utils.SortType;
 import io.reactivex.Observable;
 
 public class ProcessOperations<T, R> {

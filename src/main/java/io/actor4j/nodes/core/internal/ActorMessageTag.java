@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.actor4j.nodes.core;
+package io.actor4j.nodes.core.internal;
 
 public final class ActorMessageTag {
 	public static final int DATA     = 1;

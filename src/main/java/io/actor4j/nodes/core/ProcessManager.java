@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.actor4j.nodes.core.pa;
+package io.actor4j.nodes.core;
 
-import static io.actor4j.nodes.core.ActorMessageTag.DATA;
+import static io.actor4j.nodes.core.internal.ActorMessageTag.DATA;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +30,7 @@ import io.actor4j.core.messages.ActorMessage;
 import io.actor4j.core.utils.ActorFactory;
 import io.actor4j.core.utils.ActorGroup;
 import io.actor4j.core.utils.ActorGroupSet;
-import io.actor4j.nodes.core.NodeActor;
+import io.actor4j.nodes.core.internal.NodeActor;
 
 public class ProcessManager {
 	protected ActorSystem system;

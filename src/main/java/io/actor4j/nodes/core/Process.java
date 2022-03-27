@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.actor4j.nodes.core.pa;
+package io.actor4j.nodes.core;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,7 +26,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import io.actor4j.nodes.core.Node;
+import io.actor4j.nodes.core.internal.Node;
 import io.reactivex.Observable;
 
 public class Process<T, R> {

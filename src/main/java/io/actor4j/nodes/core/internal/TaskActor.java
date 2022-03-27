@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.actor4j.nodes.core;
+package io.actor4j.nodes.core.internal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ import io.actor4j.core.utils.ActorGroupList;
 import io.reactivex.Observable;
 
 import static io.actor4j.core.utils.CommPattern.*;
-import static io.actor4j.nodes.core.ActorMessageTag.*;
+import static io.actor4j.nodes.core.internal.ActorMessageTag.*;
 
 public class TaskActor<T, R> extends Actor implements ActorDistributedGroupMember {
 	protected NodeOperations<T, R> operations;
