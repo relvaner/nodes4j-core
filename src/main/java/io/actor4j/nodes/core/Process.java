@@ -27,7 +27,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import io.actor4j.nodes.core.internal.Node;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 public class Process<T, R> {
 	protected Node<T, R> node;

@@ -31,7 +31,7 @@ import io.actor4j.core.immutable.ImmutableList;
 import io.actor4j.core.messages.ActorMessage;
 import io.actor4j.core.utils.ActorGroup;
 import io.actor4j.core.utils.ActorGroupList;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 import static io.actor4j.core.utils.CommPattern.*;
 import static io.actor4j.nodes.core.internal.ActorMessageTag.*;

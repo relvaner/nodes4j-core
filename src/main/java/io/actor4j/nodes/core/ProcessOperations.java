@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 import io.actor4j.nodes.core.exceptions.DataException;
 import io.actor4j.nodes.core.utils.SortProcess;
 import io.actor4j.nodes.core.utils.SortType;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 public class ProcessOperations<T, R> {
 	protected Process<T, R> process;
