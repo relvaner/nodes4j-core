@@ -24,6 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.actor4j.core.ActorSystem;
+import io.actor4j.core.ActorSystemFactory;
 import io.actor4j.core.actors.Actor;
 import io.actor4j.core.config.ActorSystemConfig;
 import io.actor4j.core.messages.ActorMessage;
@@ -62,7 +63,7 @@ public class ProcessManager {
 		return this;
 	}
 	
-	public void start(Process<?, ?> process) {
+	public void start(ActorSystemFactory factory, Process<?, ?> process) {
 		data.clear();
 		result.clear();
 		aliases.clear();
@@ -70,7 +71,7 @@ public class ProcessManager {
 		ActorSystemConfig config = ActorSystemConfig.builder()
 			.name("nodes4j")
 			.build();
-		system = ActorSystem.create(config);
+		system = ActorSystem.create(factory, config);
 		process.node.nTasks = Runtime.getRuntime().availableProcessors()/*stand-alone*/;
 		process.node.isRoot = true;
 		process.data = data;
@@ -88,7 +89,7 @@ public class ProcessManager {
 		system.start(null, onTermination);
 	}
 	
-	public void start(List<Process<?, ?>> processes) {
+	public void start(ActorSystemFactory factory, List<Process<?, ?>> processes) {
 		data.clear();
 		result.clear();
 		aliases.clear();
@@ -96,7 +97,7 @@ public class ProcessManager {
 		ActorSystemConfig config = ActorSystemConfig.builder()
 			.name("nodes4j")
 			.build();
-		system = ActorSystem.create(config);
+		system = ActorSystem.create(factory, config);
 		int nTasks = Runtime.getRuntime().availableProcessors()/*stand-alone*/;
 		ActorGroup group = new ActorGroupSet();
 		for (Process<?, ?> process : processes) {
@@ -118,8 +119,8 @@ public class ProcessManager {
 		system.start(null, onTermination);
 	}
 	
-	public void start(Process<?, ?>... processes) {
-		start(Arrays.asList(processes));
+	public void start(ActorSystemFactory factory, Process<?, ?>... processes) {
+		start(factory, Arrays.asList(processes));
 	}
 	
 	/*

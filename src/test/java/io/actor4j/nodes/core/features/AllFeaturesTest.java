@@ -17,9 +17,7 @@ package io.actor4j.nodes.core.features;
 
 import org.junit.runners.Suite;
 
-import static io.actor4j.core.logging.ActorLogger.ERROR;
-import static io.actor4j.core.logging.ActorLogger.logger;
-import static io.actor4j.core.logging.ActorLogger.systemLogger;
+import static io.actor4j.core.logging.ActorLogger.*;
 
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;

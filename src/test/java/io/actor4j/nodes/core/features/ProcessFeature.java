@@ -23,6 +23,8 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.actor4j.core.ActorRuntime;
+import io.actor4j.core.ActorSystemFactory;
 import io.actor4j.nodes.core.Process;
 import io.actor4j.nodes.core.ProcessManager;
 import io.actor4j.nodes.core.utils.SortProcess;
@@ -37,12 +39,16 @@ public class ProcessFeature {
 	protected final Integer[] precondition_numbers = { 3, 2, 1, 1, 0, 2, 45, 78, 99, 34, 31, 8, 1, 123, 14, 9257, -10, -15 };
 	protected List<Integer> preConditionList;
 	
+	protected ActorSystemFactory actorRuntime;
+	
 	@Before
 	public void before() {
 		testDone = new CountDownLatch(1);
 		
 		preConditionList = new ArrayList<>();
 		preConditionList.addAll(Arrays.asList(precondition_numbers));
+		
+		actorRuntime = ActorRuntime.factory();
 	}
 
 	@Test(timeout=5000)
@@ -65,7 +71,7 @@ public class ProcessFeature {
 				assertEquals(postConditionList, manager.getFirstResult()); 
 				logger().log(DEBUG, manager.getFirstResult().toString()); 
 				testDone.countDown();})
-			.start(process);
+			.start(actorRuntime, process);
 		
 		try {
 			testDone.await();
@@ -94,7 +100,7 @@ public class ProcessFeature {
 				assertEquals(postConditionList, manager.getFirstResult()); 
 				logger().log(DEBUG, manager.getFirstResult().toString()); 
 				testDone.countDown();})
-			.start(process);
+			.start(actorRuntime, process);
 		
 		try {
 			testDone.await();
@@ -121,7 +127,7 @@ public class ProcessFeature {
 				assertEquals(postConditionList, manager.getFirstResult()); 
 				logger().log(DEBUG, manager.getFirstResult().toString()); 
 				testDone.countDown();})
-			.start(process);
+			.start(actorRuntime, process);
 		
 		try {
 			testDone.await();
@@ -150,7 +156,7 @@ public class ProcessFeature {
 				assertEquals(postConditionList, manager.getResult("process_sort_asc")); 
 				logger().log(DEBUG, "Result (process_sort_asc): "+manager.getResult("process_sort_asc")); 
 				testDone.countDown();})
-			.start(process);
+			.start(actorRuntime, process);
 		
 		try {
 			testDone.await();
@@ -197,7 +203,7 @@ public class ProcessFeature {
 				logger().log(DEBUG, "Result (process_sort_asc2): "+manager.getData("process_filter")); 
 				logger().log(DEBUG, "Result (process_filter): "+manager.getResult("process_filter")); 
 				testDone.countDown();})
-			.start(process);
+			.start(actorRuntime, process);
 		
 		try {
 			testDone.await();
@@ -253,7 +259,7 @@ public class ProcessFeature {
 				assertEquals(postConditionList3, manager.getResult("process_sort_asc")); 
 				//assertEquals(postConditionList3, process_sort_asc.getResult()); TODO: BUG
 				testDone.countDown();})
-			.start(process_main);
+			.start(actorRuntime, process_main);
 		
 		try {
 			testDone.await();
@@ -296,7 +302,7 @@ public class ProcessFeature {
 				assertTrue(preConditionList2.containsAll(manager.getData("process_b")));
 				assertEquals(postConditionList, manager.getResult("process_sort_asc")); 
 				testDone.countDown();})
-			.start(process_a, process_b);
+			.start(actorRuntime, process_a, process_b);
 		
 		try {
 			testDone.await();
@@ -323,7 +329,7 @@ public class ProcessFeature {
 				assertEquals(postConditionList, manager.getFirstResult()); 
 				logger().log(DEBUG, manager.getFirstResult().toString()); 
 				testDone.countDown();})
-			.start(process);
+			.start(actorRuntime, process);
 		
 		try {
 			testDone.await();
@@ -350,7 +356,7 @@ public class ProcessFeature {
 				assertEquals(postConditionList, manager.getFirstResult()); 
 				logger().log(DEBUG, manager.getFirstResult().toString()); 
 				testDone.countDown();})
-			.start(process);
+			.start(actorRuntime, process);
 		
 		try {
 			testDone.await();
