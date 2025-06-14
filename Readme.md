@@ -2,6 +2,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/relvaner/nodes4j-core/badge.svg?branch=master)](https://coveralls.io/github/relvaner/nodes4j-core?branch=master)
 [![License](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/)
 
+This library has been **moved to [Actor4j - Streams]([https://link.to.xyz](https://github.com/relvaner/actor4j/tree/master/actor4j-streams))**.
+
 ## Nodes4j ##
 
 At `nodes4j` nodes correspond to the processes, following the process algebra [[1](#1)]. Several processes can be executed both sequentially and in parallel. Figure 1 shows the general workflow of a process. The incoming data of the process P1 is first split evenly and then mapped accordingly. Then the results are merged (Reduce) and sent to the processes P2, P3 and P4 (Hub). The `MapReduce` process is executed in parallel. The advantage of this approach lies in the loose coupling of the nodes or processes. They can be easily exchanged and replaced by others.
