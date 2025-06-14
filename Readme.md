@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/relvaner/nodes4j-core/badge.svg?branch=master)](https://coveralls.io/github/relvaner/nodes4j-core?branch=master)
 [![License](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/)
 
-This library has been **moved to [Actor4j - Streams]([https://link.to.xyz](https://github.com/relvaner/actor4j/tree/master/actor4j-streams))**.
+##  This library has been **moved to [Actor4j - Streams]([https://link.to.xyz](https://github.com/relvaner/actor4j/tree/master/actor4j-streams))**. ##
 
 ## Nodes4j ##
 
